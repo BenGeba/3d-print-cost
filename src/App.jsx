@@ -531,7 +531,7 @@ export default function App() {
           ))}
           <span className={SUBTLE}>Currency:</span>
           <select
-            className="select select-bordered select-sm"
+            className="select select-neutral"
             value={s.currency}
             onChange={(e) => setMany({ currency: e.target.value })}
           >
