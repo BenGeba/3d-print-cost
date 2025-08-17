@@ -5,8 +5,8 @@ export default function InstallPWAButton() {
 
   useEffect(() => {
     function onBIP(e) {
-      e.preventDefault();      // Browser-UI unterdrücken
-      setDeferred(e);          // Event für späteres prompt() merken
+      e.preventDefault();
+      setDeferred(e);
     }
     window.addEventListener("beforeinstallprompt", onBIP);
     return () => window.removeEventListener("beforeinstallprompt", onBIP);
@@ -14,10 +14,10 @@ export default function InstallPWAButton() {
 
   async function install() {
     if (!deferred) return;
-    await deferred.prompt();   // zeigt Install-Prompt
-    setDeferred(null);         // Event ist nur 1× nutzbar
+    await deferred.prompt();
+    setDeferred(null);
   }
 
-  if (!deferred) return null;  // Button nur anzeigen, wenn installierbar
+  if (!deferred) return null;
   return <button className="btn btn-primary" onClick={install}>App installieren</button>;
 }

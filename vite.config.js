@@ -8,17 +8,17 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      devOptions: { enabled: false }, // Installierbarkeit realistisch testen via build/preview
+      devOptions: { enabled: false },
       includeAssets: ['favicon.ico', 'logo.svg', 'apple-touch-icon-180x180.png'],
       manifest: {
         id: '/?source=pwa',
         name: '3D Print Cost',
         short_name: '3D Cost',
         description: 'Kostenrechner für 3D-Drucke',
-        start_url: '/',           // muss im scope liegen
-        scope: '/',               // scope passend zur App
-        display: 'standalone',    // „App“-Fenster statt Browser-Chrome
-        theme_color: '#0b132b',   // zum <meta name="theme-color"> passend
+        start_url: '/',
+        scope: '/',
+        display: 'standalone',
+        theme_color: '#0b132b',
         background_color: '#0b132b',
         icons: [
           { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
@@ -27,7 +27,7 @@ export default defineConfig({
         ],
         screenshots: [
           { src: 'screenshots/desktop-1280x800.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide',  label: 'Kostenübersicht (Desktop)' },
-          { src: 'screenshots/mobile-750x1334.png',  sizes: '750x1334',  type: 'image/png',                     label: 'Eingaben (Mobil)' }
+          { src: 'screenshots/mobile-750x1334.png',  sizes: '750x1334',  type: 'image/png', label: 'Eingaben (Mobil)' }
         ]
       }
     })
