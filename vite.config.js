@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  base: 'https://bengeba.github.io/3d-print-cost',
   plugins: [
     react(),
     VitePWA({
@@ -15,8 +16,8 @@ export default defineConfig({
         name: '3D Print Cost',
         short_name: '3D Cost',
         description: 'Kostenrechner für 3D-Drucke',
-        start_url: '/',
-        scope: '/',
+        start_url: '.',
+        scope: '.',
         display: 'standalone',
         theme_color: '#0b132b',
         background_color: '#0b132b',
