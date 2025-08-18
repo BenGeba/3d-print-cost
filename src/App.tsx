@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import React, {type ChangeEvent, useEffect, useMemo, useState} from "react";
 import InstallPWAButton from "./components/InstallPWAButton";
 
 // Type definitions
@@ -201,8 +201,7 @@ function number(v: string | number | undefined | null, fallback: number = 0): nu
 function parseInput(v: string): string | number {
   if (v === "") return "";
   // Replace comma with dot for internal storage
-  const normalized = String(v).replace(",", ".");
-  return normalized;
+    return String(v).replace(",", ".");
 }
 
 function prettyDuration(hours: number | string, minutes: number | string): string {
