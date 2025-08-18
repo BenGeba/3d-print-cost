@@ -2,11 +2,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   base: 'https://bengeba.github.io/3d-print-cost',
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: 'prompt',
       devOptions: { enabled: false },

@@ -14,10 +14,10 @@ import InstallPWAButton from "./components/InstallPWAButton";
 // - LocalStorage persistence
 
 // ---------- UI classes ----------
-const CARD_CLASS = "card bg-base-100 shadow p-6";
-const LABEL_CLASS = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
-const INPUT_CLASS = "input input-bordered w-full";
-const SUBTLE = "text-sm text-gray-500 dark:text-gray-400";
+const CARD_CLASS = "card bg-base-100 shadow-sm w-96";
+const LABEL_CLASS = "block text-sm font-medium mb-1";
+const INPUT_CLASS = "input input-primary";
+const SUBTLE = "text-sm";
 
 // ---------- Default state ----------
 const defaultState = {
@@ -70,12 +70,16 @@ const presets = {
 // ---------- Printer power presets (PLA baseline) ----------
 const POWER_PRESETS = [
     { key: "custom", label: "Custom (enter manually)", watts: null },
-    { key: "bambu_p1s", label: "Bambu Lab P1S (~105 W)", watts: 105 },
+    { key: "bambu_p1s", label: "Bambu Lab P1S (~120 W)", watts: 120 },
     { key: "bambu_a1", label: "Bambu Lab A1 (~95 W)", watts: 95 },
-    { key: "bambu_a1_mini", label: "Bambu Lab A1 mini (~80 W)", watts: 80 },
-    { key: "bambu_x1c", label: "Bambu Lab X1C (~105 W)", watts: 105 },
-    { key: "prusa_mk4s", label: "Prusa MK4S (~80 W)", watts: 80 },
-    { key: "creality_ender3_v3", label: "Creality Ender-3 V3 (~110 W)", watts: 110 },
+    { key: "bambu_a1_mini", label: "Bambu Lab A1 mini (~65 W)", watts: 65 },
+    { key: "bambu_x1c", label: "Bambu Lab X1C (~130 W)", watts: 130 },
+    { key: "bambu_h2d", label: "Bambu Lab H2D (~150 W)", watts: 150 },
+    { key: "prusa_mk4s", label: "Prusa MK4S (~100 W)", watts: 100 },
+    { key: "prusa_core_one", label: "Prusa Core One (~120 W)", watts: 120 },
+    { key: "prusa_xl_1", label: "Prusa XL 1 Extruder (~140 W)", watts: 140 },
+    { key: "prusa_xl_5", label: "Prusa Core One (~140 W)", watts: 140 },
+    { key: "creality_ender3_v3", label: "Creality Ender-3 V3 (~80 W)", watts: 80 },
     { key: "elegoo_neptune4_pro", label: "Elegoo Neptune 4 Pro (~150 W)", watts: 150 },
 ];
 
@@ -96,6 +100,9 @@ const PRINTER_MATERIAL_OVERRIDES = {
     creality_ender3_v3: { PLA: 110 },
     elegoo_neptune4_pro: { PLA: 150 },
 };
+
+const THEME_KEY = "print-cost-calc:theme";
+const THEMES = { light: "nord", dark: "dracula" };
 
 // ---------- Helpers ----------
 function usePersistentState(key, initial) {
@@ -201,7 +208,7 @@ function Section({ title, children, aside }) {
 
 function Info({ children }) {
     return (
-        <div className="rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-4 text-sm text-gray-700 dark:text-gray-300">
+        <div className="rounded-xl border p-4 text-sm">
             {children}
         </div>
     );
@@ -210,7 +217,7 @@ function Info({ children }) {
 function InfoLine({ label, value }) {
     return (
         <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-300">{label}</span>
+            <span>{label}</span>
             <span className="font-medium">{value}</span>
         </div>
     );
@@ -220,16 +227,40 @@ function Line({ label, value, currency }) {
     const v = Number.isFinite(value) ? value : 0;
     return (
         <div className="flex items-center justify-between">
-            <span className="text-gray-600 dark:text-gray-300">{label}</span>
+            <span>{label}</span>
             <span className="font-medium">{(Math.round(v * 100) / 100).toFixed(2)} {currency}</span>
         </div>
     );
+}
+
+function useThemePersistence() {
+    const prefersDark = typeof window !== "undefined" &&
+        window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    const [theme, setTheme] = React.useState(() => {
+        try {
+            const saved = localStorage.getItem(THEME_KEY);
+            if (saved === THEMES.dark || saved === THEMES.light) return saved;
+        } catch {}
+        return prefersDark ? THEMES.dark : THEMES.light;
+    });
+
+    React.useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+        try { localStorage.setItem(THEME_KEY, theme); } catch {}
+    }, [theme]);
+
+    const isDark = theme === THEMES.dark;
+    const setIsDark = (v) => setTheme(v ? THEMES.dark : THEMES.light);
+
+    return { theme, setTheme, isDark, setIsDark };
 }
 
 // ---------- App ----------
 export default function App() {
     const [s, set] = usePersistentState("print-cost-calc:v1", defaultState);
     const [toasts, setToasts] = useState([]);
+    const { isDark, setIsDark } = useThemePersistence();
 
     // --- Toast helpers (daisyUI toast + alert) ---
     function pushToast(kind, message, ms = 3500, actionLabel, actionFn) {
@@ -475,23 +506,6 @@ export default function App() {
         }
     }
 
-    // --- Theme (light/dark) via daisyUI theme-controller ---
-    useEffect(() => {
-        // Default to light theme: nord
-        const root = document.documentElement;
-        root.setAttribute('data-theme', 'nord');
-        root.classList.remove('dark');
-    }, []);
-
-    function onThemeSwapChange(e) {
-        const checked = e.target.checked;
-        const theme = checked ? 'dracula' : 'nord';
-        const root = document.documentElement;
-        root.setAttribute('data-theme', theme);
-        // Keep Tailwind `dark:` variants in sync
-        root.classList.toggle('dark', checked);
-    }
-
     // ---------- UI ----------
     return (
         <div className="min-h-screen bg-base-200 text-base-content transition-colors">
@@ -499,15 +513,21 @@ export default function App() {
                 <header className="mb-8 flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl md:text-3xl font-bold">3D Print Cost Calculator</h1>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">Plan reliable costs for your FDM prints. Save presets, switch modes, and get a transparent breakdown.</p>
+                        <p className="mt-1">Plan reliable costs for your FDM prints. Save presets, switch modes, and get a transparent breakdown.</p>
                     </div>
                     <div className="flex items-center gap-4">
                         <button className="btn btn-outline btn-error" onClick={openResetModal}>
                             Reset
                         </button>
                         <label className="swap swap-rotate">
-                            {/* this hidden checkbox controls the state */}
-                            <input type="checkbox" className="theme-controller" value="dracula" onChange={onThemeSwapChange} />
+                            {/* controlled checkbox tied to persisted theme */}
+                            <input
+                                type="checkbox"
+                                className="theme-controller"
+                                value="dracula"
+                                checked={isDark}
+                                onChange={(e) => setIsDark(e.target.checked)}
+                            />
                             {/* sun icon */}
                             <svg className="swap-off h-8 w-8 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                 <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
@@ -840,10 +860,11 @@ export default function App() {
                     {/* Summary */}
                     <div className="space-y-6">
                         <div className={CARD_CLASS}>
+                          <div className="card-body">
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-lg font-semibold">Breakdown</h2>
                                 <div className="flex items-center gap-2">
-                                    <button className="btn btn-soft btn-accent" onClick={copyBreakdown}>Copy breakdown</button>
+                                    <button className="btn btn-soft btn-primary" onClick={copyBreakdown}>Copy breakdown</button>
                                 </div>
                             </div>
                             <div className="space-y-3">
@@ -867,16 +888,21 @@ export default function App() {
                                 <div className="font-semibold">Total</div>
                                 <div className="text-2xl font-bold">{fmt(total)}</div>
                             </div>
+                          </div>
                         </div>
 
                         <div className={CARD_CLASS}>
-                            <h2 className="text-lg font-semibold mb-3">Quick tips</h2>
-                            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                                <li>Use slicer estimates for grams and hours, then refine with actuals.</li>
-                                <li>Track failed prints to tune your failure rate.</li>
-                                <li>Keep profiles per material brand; spool prices vary a lot.</li>
-                                <li>Consider separate business overhead (rent, insurance) if applicable.</li>
-                            </ul>
+                            <div className="card-body">
+                                <div className="flex justify-between">
+                                    <h2 className="text-lg font-semibold">Quick tips</h2>
+                                </div>
+                                <ul className="list-disc pl-5 space-y-1">
+                                    <li>Use slicer estimates for grams and hours, then refine with actuals.</li>
+                                    <li>Track failed prints to tune your failure rate.</li>
+                                    <li>Keep profiles per material brand; spool prices vary a lot.</li>
+                                    <li>Consider separate business overhead (rent, insurance) if applicable.</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>

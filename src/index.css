@@ -1,9 +1,6 @@
 @import "tailwindcss";
 
-/* Schaltet die dark: Varianten auf Klassensteuerung um */
-@custom-variant dark (&:where(.dark, .dark *));
-
 @plugin "daisyui" {
-  /* nur eine kuratierte Auswahl einbinden (spart CSS) */
   themes: nord --default, dracula --prefersdark;
+  logs: true;
 }
