@@ -1,5 +1,6 @@
 import React, {type ChangeEvent, useEffect, useMemo, useState} from "react";
 import InstallPWAButton from "./components/InstallPWAButton";
+import { formatToCurrency } from "./utils/formatnumbers";
 
 // Type definitions
 interface AppState {
@@ -131,7 +132,7 @@ const defaultState: AppState = {
   laborMinutes: 15,
   postProcessingFixed: 0,
   marginPercent: 0,
-  currency: "€",
+  currency: "EUR",
 };
 
 // ---------- Material presets ----------
@@ -295,11 +296,21 @@ function InfoLine({ label, value }: InfoLineProps) {
 }
 
 function Line({ label, value, currency }: LineProps) {
-  const v = Number.isFinite(value) ? value : 0;
+  const browserLocale =
+  (typeof navigator !== "undefined" &&
+    (navigator.languages?.[0] || navigator.language)) ||
+  "de-DE";
+   const formatted = formatToCurrency({
+    num: value ?? 0,
+    currency,
+    decimalPlaces: 2,
+    significantDecimalPlaces: 8,
+    locale: browserLocale
+  });
   return (
     <div className="flex items-center justify-between">
       <span>{label}</span>
-      <span className="font-medium">{(Math.round(v * 100) / 100).toFixed(2)} {currency}</span>
+      <span className="font-medium">{formatted}</span>
     </div>
   );
 }
@@ -374,7 +385,7 @@ export default function App() {
   const margin = baseSubtotal * (number(s.marginPercent, 0) / 100);
   const total = baseSubtotal + margin;
 
-  const fmt = (v: number): string => `${(Math.round(v * 100) / 100).toFixed(2)} ${s.currency}`;
+  const fmt = (v: number): string => `${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${s.currency}`;
 
   // --- Inline validation ---
   const errors = useMemo<ValidationErrors>(() => {
@@ -665,9 +676,9 @@ export default function App() {
             value={s.currency}
             onChange={(e) => setMany({ currency: e.target.value })}
           >
-            <option>€</option>
-            <option>$</option>
-            <option>£</option>
+            <option>EUR</option>
+            <option>USD</option>
+            <option>GBP</option>
           </select>
         </div>
 
