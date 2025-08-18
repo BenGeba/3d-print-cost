@@ -1,4 +1,4 @@
-// Codesnippets from https://gist.github.com/alamilladev/52c873f1d956afbc533e3e58256fd314
+// Code snippets from https://gist.github.com/alamilladev/52c873f1d956afbc533e3e58256fd314
 
 export const defaultCurrency = {
   id: 'USD',
@@ -6,17 +6,6 @@ export const defaultCurrency = {
   full: 'USD$',
 };
 
-/**
- * ===========================================
- * |******** CURRENCY FORMAT METHODS ********|
- * ===========================================
- */
-
-/**
- * Converts a number in scientific notation to its non-scientific representation.
- * @param numString - The number in scientific notation as a string.
- * @returns The number in non-scientific notation as a string.
- */
 function convertToNonScientific(num: string | number): string {
   if (typeof num === 'number') {
     num = String(num);
@@ -88,7 +77,6 @@ const symbolToISO: Record<string, string> = {
   "¥": "JPY",
   "CHF": "CHF",
   "zł": "PLN"
-  // ggf. erweitern
 };
 
 function toISO4217(cur?: string | null): string {
@@ -99,40 +87,50 @@ function toISO4217(cur?: string | null): string {
   return symbolToISO[c] || fallback;
 }
 
-export function formatToCurrency(input: FormatCurrencyInput): string {
-  const n = typeof input.num === "string" ? Number(input.num) : (input.num ?? 0);
-  const abs = Math.abs(n);
-  const locale = input.locale || undefined;
-  const currency = toISO4217(input.currency);
-  const dp = input.decimalPlaces ?? 2;
-  const sdp = input.significantDecimalPlaces ?? 8;
-
-  let minFD = dp;
-  let maxFD = dp;
-  let value = n;
-
-  if (abs < 1) {
-    const withSig = formatWithSignificantDecimals(abs, sdp);
-    const decLen = withSig.split(".")[1]?.length ?? 0;
-    const [minFD, maxFD] = safeDigits(2, Math.max(2, Math.min(decLen, sdp)));
-    value = Math.sign(n) < 0 ? -Number(withSig) : Number(withSig);
-  }
-
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-    currencyDisplay: "symbol",
-    useGrouping: true,
-    minimumFractionDigits: minFD,
-    maximumFractionDigits: maxFD,
-  }).format(value);
-}
-
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 const safeDigits = (minFD: number, maxFD: number) => {
-  const min = clamp(minFD, 0, 20);
-  const maxClamped = clamp(maxFD, 0, 20);
-  const max = Math.max(min, maxClamped);
-  return [min, max] as const;
+    const min = clamp(minFD, 0, 20);
+    const maxClamped = clamp(maxFD, 0, 20);
+    const max = Math.max(min, maxClamped);
+    return [min, max] as const;
 };
+
+export function formatToCurrency(input: FormatCurrencyInput): string {
+    const nRaw = typeof input.num === "string" ? Number(input.num) : (input.num ?? 0);
+    const n = Number.isFinite(nRaw as number) ? (nRaw as number) : 0;
+    const abs = Math.abs(n);
+
+    const locale =
+        input.locale ||
+        (typeof navigator !== "undefined" ? (navigator.languages?.[0] || navigator.language) : undefined);
+
+    const currency = toISO4217(input.currency);
+    const dp = input.decimalPlaces ?? 2;
+    const sdp = input.significantDecimalPlaces ?? 8;
+
+    let minFD: number;
+    let maxFD: number;
+    let value = n;
+
+    if (abs < 1) {
+        const withSig = formatWithSignificantDecimals(abs, sdp);
+        const decLen = withSig.split(".")[1]?.length ?? 0;
+
+        const digits = Math.max(2, Math.min(decLen, sdp));
+        [minFD, maxFD] = safeDigits(2, digits);
+
+        value = Math.sign(n) < 0 ? -Number(withSig) : Number(withSig);
+    } else {
+        [minFD, maxFD] = safeDigits(dp, dp);
+    }
+
+    return new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency,
+        currencyDisplay: "symbol",
+        useGrouping: true,
+        minimumFractionDigits: minFD,
+        maximumFractionDigits: maxFD,
+    }).format(value);
+}
