@@ -3,18 +3,31 @@ import InstallPWAButton from "./components/InstallPWAButton";
 import { formatToCurrency } from "./utils/formatnumbers";
 
 // Type definitions
+interface Filament {
+  id: string;
+  name: string;
+  pricePerKg: number | string;
+  usedGrams?: number | string;
+  lengthMeters?: number | string;
+  diameter: number | string;
+  density: number | string;
+  material: string;
+}
+
 interface AppState {
   mode: "hobby" | "business";
   filamentPricingMode: "grams" | "length";
-  pricePerKg: number | string;
-  filamentUsedGrams: number | string;
-  filamentDiameter: number | string;
-  filamentLengthMeters: number | string;
-  densityGcm3: number | string;
+  filaments: Filament[];
+  // Legacy fields for backward compatibility (will be migrated)
+  pricePerKg?: number | string;
+  filamentUsedGrams?: number | string;
+  filamentDiameter?: number | string;
+  filamentLengthMeters?: number | string;
+  densityGcm3?: number | string;
+  material?: string;
   supportWastePercent: number | string;
   failureRatePercent: number | string;
   powerProfile: string;
-  material: string;
   avgPowerW: number | string;
   printTimeHours: number | string;
   printTimeMinutes: number | string;
@@ -54,7 +67,9 @@ interface Toast {
   actionFn?: () => void;
 }
 
-type ValidationErrors = Partial<Record<keyof AppState, string>>;
+type ValidationErrors = Partial<Record<keyof AppState, string>> & {
+  [key: `filament-${string}-${keyof Filament}`]: string;
+};
 
 // UI component prop types
 interface FieldProps {
@@ -112,15 +127,19 @@ const SUBTLE = "text-sm";
 const defaultState: AppState = {
   mode: "business",
   filamentPricingMode: "grams",
-  pricePerKg: 25,
-  filamentUsedGrams: 28,
-  filamentDiameter: 1.75,
-  filamentLengthMeters: 0,
-  densityGcm3: 1.24,
+  filaments: [{
+    id: "filament-1",
+    name: "Filament 1",
+    pricePerKg: 25,
+    usedGrams: 28,
+    diameter: 1.75,
+    lengthMeters: 0,
+    density: 1.24,
+    material: "PLA"
+  }],
   supportWastePercent: 10,
   failureRatePercent: 5,
   powerProfile: "custom",
-  material: "PLA",
   avgPowerW: 120,
   printTimeHours: 5,
   printTimeMinutes: 0,
@@ -178,7 +197,32 @@ function usePersistentState<T>(key: string, initial: T): [T, React.Dispatch<Reac
   const [state, setState] = useState<T>(() => {
     try {
       const raw = localStorage.getItem(key);
-      return raw ? { ...initial, ...JSON.parse(raw) } : initial;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // Migration logic: convert legacy single filament to array format
+        if (parsed && !Array.isArray(parsed.filaments) && parsed.pricePerKg !== undefined) {
+          const legacyFilament: Filament = {
+            id: "filament-1",
+            name: "Filament 1",
+            pricePerKg: parsed.pricePerKg || 25,
+            usedGrams: parsed.filamentUsedGrams || 0,
+            lengthMeters: parsed.filamentLengthMeters || 0,
+            diameter: parsed.filamentDiameter || 1.75,
+            density: parsed.densityGcm3 || 1.24,
+            material: parsed.material || "PLA"
+          };
+          parsed.filaments = [legacyFilament];
+          // Clean up legacy fields
+          delete parsed.pricePerKg;
+          delete parsed.filamentUsedGrams;
+          delete parsed.filamentLengthMeters;
+          delete parsed.filamentDiameter;
+          delete parsed.densityGcm3;
+          delete parsed.material;
+        }
+        return { ...initial, ...parsed };
+      }
+      return initial;
     } catch {
       return initial;
     }
@@ -315,6 +359,169 @@ function Line({ label, value, currency }: LineProps) {
   );
 }
 
+// ---------- Filament Card Component ----------
+interface FilamentCardProps {
+  filament: Filament;
+  filamentPricingMode: "grams" | "length";
+  onUpdate: (id: string, updates: Partial<Filament>) => void;
+  onRemove: (id: string) => void;
+  onApplyPreset: (name: string, filamentId: string) => void;
+  errors: ValidationErrors;
+  canRemove: boolean;
+}
+
+function FilamentCard({ filament, filamentPricingMode, onUpdate, onRemove, onApplyPreset, errors, canRemove }: FilamentCardProps) {
+  return (
+    <div className="card bg-base-100 shadow border border-base-300">
+      <div className="card-body">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="flex-1">
+            <Field label="Name" tip="Custom label for this filament">
+              <input
+                className={INPUT_CLASS}
+                type="text"
+                placeholder="Filament name"
+                value={filament.name}
+                onChange={(e) => onUpdate(filament.id, { name: e.target.value })}
+              />
+            </Field>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="dropdown dropdown-end">
+              <div tabIndex={0} role="button" className="btn btn-sm btn-ghost">
+                Presets
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-24 p-2 shadow">
+                {Object.keys(presets).map((k) => (
+                  <li key={k}>
+                    <button onClick={() => onApplyPreset(k, filament.id)}>{k}</button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {canRemove && (
+              <button
+                className="btn btn-sm btn-error btn-soft"
+                onClick={() => onRemove(filament.id)}
+                title="Remove filament"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+        
+        <Row>
+          <Field label="Material">
+            <select
+              className="select select-bordered"
+              value={filament.material}
+              onChange={(e) => onUpdate(filament.id, { material: e.target.value })}
+            >
+              {MATERIALS.map((m) => (
+                <option key={m.key} value={m.key}>{m.label}</option>
+              ))}
+            </select>
+          </Field>
+          <Field 
+            label="Price per kg" 
+            error={errors[`filament-${filament.id}-pricePerKg` as keyof ValidationErrors]} 
+            tip="Material price per kilogram"
+          >
+            <input
+              className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-pricePerKg` as keyof ValidationErrors] ? 'input-error' : ''}`}
+              type="text"
+              inputMode="decimal"
+              placeholder="0"
+              value={filament.pricePerKg}
+              onChange={(e) => onUpdate(filament.id, { pricePerKg: parseInput(e.target.value) })}
+            />
+          </Field>
+        </Row>
+
+        <Row>
+          {filamentPricingMode === "grams" ? (
+            <Field 
+              label="Used amount" 
+              suffix="grams" 
+              error={errors[`filament-${filament.id}-usedGrams` as keyof ValidationErrors]} 
+              tip="Use slicer estimate or measured weight"
+            >
+              <input
+                className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-usedGrams` as keyof ValidationErrors] ? 'input-error' : ''}`}
+                type="text"
+                inputMode="decimal"
+                placeholder="0"
+                value={filament.usedGrams}
+                onChange={(e) => onUpdate(filament.id, { usedGrams: parseInput(e.target.value) })}
+              />
+            </Field>
+          ) : (
+            <>
+              <Field 
+                label="Length" 
+                suffix="meters" 
+                error={errors[`filament-${filament.id}-lengthMeters` as keyof ValidationErrors]} 
+                tip="From slicer or spool meter counter"
+              >
+                <input
+                  className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-lengthMeters` as keyof ValidationErrors] ? 'input-error' : ''}`}
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="0"
+                  value={filament.lengthMeters}
+                  onChange={(e) => onUpdate(filament.id, { lengthMeters: parseInput(e.target.value) })}
+                />
+              </Field>
+              <Field 
+                label="Diameter" 
+                suffix="mm" 
+                error={errors[`filament-${filament.id}-diameter` as keyof ValidationErrors]} 
+                tip="Typical: 1.75 mm or 2.85 mm"
+              >
+                <input
+                  className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-diameter` as keyof ValidationErrors] ? 'input-error' : ''}`}
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="1.75"
+                  value={filament.diameter}
+                  onChange={(e) => onUpdate(filament.id, { diameter: parseInput(e.target.value) })}
+                />
+              </Field>
+            </>
+          )}
+        </Row>
+
+        {filamentPricingMode === "length" && (
+          <Row>
+            <Field 
+              label="Density" 
+              suffix="g/cm³" 
+              hint="PLA≈1.24, PETG≈1.27, ABS≈1.04, TPU≈1.21" 
+              error={errors[`filament-${filament.id}-density` as keyof ValidationErrors]} 
+              tip="Material density for length→grams conversion"
+            >
+              <input
+                className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-density` as keyof ValidationErrors] ? 'input-error' : ''}`}
+                type="text"
+                inputMode="decimal"
+                placeholder="1.24"
+                value={filament.density}
+                onChange={(e) => onUpdate(filament.id, { density: parseInput(e.target.value) })}
+              />
+            </Field>
+          </Row>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ---------- App ----------
 export default function App() {
   const [s, set] = usePersistentState<AppState>("print-cost-calc:v1", defaultState);
@@ -337,28 +544,35 @@ export default function App() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }
 
-  // Derived: filament grams
-  const filamentUsedGrams = useMemo(() => {
-    if (s.filamentPricingMode === "grams") return number(s.filamentUsedGrams, 0);
+  // Helper function to calculate grams for a single filament
+  const getFilamentGrams = (filament: Filament): number => {
+    if (s.filamentPricingMode === "grams") {
+      return number(filament.usedGrams, 0);
+    }
     // Convert from length + diameter + density → grams
-    const d = number(s.filamentDiameter, 1.75) / 10; // mm → cm
+    const d = number(filament.diameter, 1.75) / 10; // mm → cm
     const r = d / 2;
     const area = Math.PI * r * r; // cm^2
-    const lengthCm = number(s.filamentLengthMeters, 0) * 100;
+    const lengthCm = number(filament.lengthMeters, 0) * 100;
     const volumeCm3 = area * lengthCm; // cm^3
-    const density = number(s.densityGcm3, 1.24); // g/cm^3
+    const density = number(filament.density, 1.24); // g/cm^3
     return volumeCm3 * density; // grams
-  }, [s.filamentPricingMode, s.filamentUsedGrams, s.filamentDiameter, s.filamentLengthMeters, s.densityGcm3]);
+  };
+
 
   const materialWasteFactor = 1 + number(s.supportWastePercent, 0) / 100;
   const failureFactor = 1 + number(s.failureRatePercent, 0) / 100;
 
+  // Calculate total material cost across all filaments
   const materialCost = useMemo(() => {
-    const gramsWithWaste = filamentUsedGrams * materialWasteFactor;
-    const kg = gramsWithWaste / 1000;
-    const base = kg * number(s.pricePerKg, 0);
-    return base * failureFactor;
-  }, [filamentUsedGrams, materialWasteFactor, failureFactor, s.pricePerKg]);
+    return s.filaments.reduce((totalCost, filament) => {
+      const gramsUsed = getFilamentGrams(filament);
+      const gramsWithWaste = gramsUsed * materialWasteFactor;
+      const kg = gramsWithWaste / 1000;
+      const baseCost = kg * number(filament.pricePerKg, 0);
+      return totalCost + (baseCost * failureFactor);
+    }, 0);
+  }, [s.filaments, s.filamentPricingMode, materialWasteFactor, failureFactor]);
 
   const totalHours = number(s.printTimeHours, 0) + number(s.printTimeMinutes, 0) / 60;
 
@@ -390,15 +604,30 @@ export default function App() {
   // --- Inline validation ---
   const errors = useMemo<ValidationErrors>(() => {
     const e: ValidationErrors = {};
-    // Allow empty fields, only validate if there's a value
-    if (s.pricePerKg !== "" && number(s.pricePerKg) < 0) e.pricePerKg = "Must be ≥ 0";
-    if (s.filamentPricingMode === 'grams') {
-      if (s.filamentUsedGrams !== "" && number(s.filamentUsedGrams) < 0) e.filamentUsedGrams = "Must be ≥ 0";
-    } else {
-      if (s.filamentLengthMeters !== "" && number(s.filamentLengthMeters) < 0) e.filamentLengthMeters = "Must be ≥ 0";
-      if (s.filamentDiameter !== "" && number(s.filamentDiameter) <= 0) e.filamentDiameter = "Must be > 0";
-      if (s.densityGcm3 !== "" && number(s.densityGcm3) <= 0) e.densityGcm3 = "Must be > 0";
-    }
+    
+    // Validate each filament
+    s.filaments.forEach((filament) => {
+      if (filament.pricePerKg !== "" && number(filament.pricePerKg) < 0) {
+        e[`filament-${filament.id}-pricePerKg` as keyof ValidationErrors] = "Must be ≥ 0";
+      }
+      
+      if (s.filamentPricingMode === 'grams') {
+        if (filament.usedGrams !== "" && number(filament.usedGrams) < 0) {
+          e[`filament-${filament.id}-usedGrams` as keyof ValidationErrors] = "Must be ≥ 0";
+        }
+      } else {
+        if (filament.lengthMeters !== "" && number(filament.lengthMeters) < 0) {
+          e[`filament-${filament.id}-lengthMeters` as keyof ValidationErrors] = "Must be ≥ 0";
+        }
+        if (filament.diameter !== "" && number(filament.diameter) <= 0) {
+          e[`filament-${filament.id}-diameter` as keyof ValidationErrors] = "Must be > 0";
+        }
+        if (filament.density !== "" && number(filament.density) <= 0) {
+          e[`filament-${filament.id}-density` as keyof ValidationErrors] = "Must be > 0";
+        }
+      }
+    });
+    
     if (s.supportWastePercent !== "") {
       const sw = number(s.supportWastePercent);
       if (sw < 0 || sw > 500) e.supportWastePercent = "0–500%";
@@ -487,11 +716,61 @@ export default function App() {
     set({ ...s, ...patch });
   }
 
-  function applyPreset(name: string): void {
+  // Filament management helpers
+  function updateFilament(id: string, updates: Partial<Filament>): void {
+    const updatedFilaments = s.filaments.map(f => 
+      f.id === id ? { ...f, ...updates } : f
+    );
+    setMany({ filaments: updatedFilaments });
+  }
+
+  function addFilament(): void {
+    const newId = `filament-${Date.now()}`;
+    const newFilament: Filament = {
+      id: newId,
+      name: `Filament ${s.filaments.length + 1}`,
+      pricePerKg: 25,
+      usedGrams: 0,
+      lengthMeters: 0,
+      diameter: 1.75,
+      density: 1.24,
+      material: "PLA"
+    };
+    setMany({ filaments: [...s.filaments, newFilament] });
+    pushToast('info', `Added ${newFilament.name}`);
+  }
+
+  function removeFilament(id: string): void {
+    if (s.filaments.length <= 1) {
+      pushToast('error', 'Cannot remove the last filament');
+      return;
+    }
+    const filamentToRemove = s.filaments.find(f => f.id === id);
+    const updatedFilaments = s.filaments.filter(f => f.id !== id);
+    setMany({ filaments: updatedFilaments });
+    if (filamentToRemove) {
+      pushToast('info', `Removed ${filamentToRemove.name}`);
+    }
+  }
+
+  function applyPreset(name: string, filamentId?: string): void {
     const p = presets[name];
     if (p) {
-      setMany(p);
-      pushToast('info', `${name} preset applied`);
+      if (filamentId) {
+        // Apply to specific filament
+        updateFilament(filamentId, { pricePerKg: p.pricePerKg, density: p.densityGcm3, material: name });
+        pushToast('info', `${name} preset applied to filament`);
+      } else {
+        // Apply to all filaments (legacy behavior)
+        const updatedFilaments = s.filaments.map(f => ({
+          ...f,
+          pricePerKg: p.pricePerKg,
+          density: p.densityGcm3,
+          material: name
+        }));
+        setMany({ filaments: updatedFilaments });
+        pushToast('info', `${name} preset applied to all filaments`);
+      }
     }
   }
 
@@ -702,9 +981,9 @@ export default function App() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            {/* Filament */}
+            {/* Filaments */}
             <Section
-              title="Filament"
+              title="Filaments"
               aside={
                 <div className="flex items-center gap-3">
                   <span className={SUBTLE}>By grams</span>
@@ -716,64 +995,33 @@ export default function App() {
                 </div>
               }
             >
-              <Row>
-                <Field label="Price per kg" error={errors.pricePerKg} tip="Material price per kilogram">
-                  <input
-                    className={`${INPUT_CLASS} ${errors.pricePerKg ? 'input-error' : ''}`}
-                    type="text"
-                    inputMode="decimal"
-                    placeholder="0"
-                    value={s.pricePerKg}
-                    onChange={(e) => setMany({ pricePerKg: parseInput(e.target.value) })}
+              <div className="space-y-4">
+                {s.filaments.map((filament) => (
+                  <FilamentCard
+                    key={filament.id}
+                    filament={filament}
+                    filamentPricingMode={s.filamentPricingMode}
+                    onUpdate={updateFilament}
+                    onRemove={removeFilament}
+                    onApplyPreset={applyPreset}
+                    errors={errors}
+                    canRemove={s.filaments.length > 1}
                   />
-                </Field>
-                {s.filamentPricingMode === "grams" ? (
-                  <Field label="Filament used" suffix="grams" error={errors.filamentUsedGrams} tip="Use slicer estimate or measured weight">
-                    <input
-                      className={`${INPUT_CLASS} ${errors.filamentUsedGrams ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={s.filamentUsedGrams}
-                      onChange={(e) => setMany({ filamentUsedGrams: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                ) : (
-                  <>
-                    <Field label="Filament length" suffix="meters" error={errors.filamentLengthMeters} tip="From slicer or spool meter counter">
-                      <input
-                        className={`${INPUT_CLASS} ${errors.filamentLengthMeters ? 'input-error' : ''}`}
-                        type="text"
-                        inputMode="decimal"
-                        placeholder="0"
-                        value={s.filamentLengthMeters}
-                        onChange={(e) => setMany({ filamentLengthMeters: parseInput(e.target.value) })}
-                      />
-                    </Field>
-                    <Field label="Diameter" suffix="mm" error={errors.filamentDiameter} tip="Typical: 1.75 mm or 2.85 mm">
-                      <input
-                        className={`${INPUT_CLASS} ${errors.filamentDiameter ? 'input-error' : ''}`}
-                        type="text"
-                        inputMode="decimal"
-                        placeholder="1.75"
-                        value={s.filamentDiameter}
-                        onChange={(e) => setMany({ filamentDiameter: parseInput(e.target.value) })}
-                      />
-                    </Field>
-                    <Field label="Density" suffix="g/cm³" hint="PLA≈1.24, PETG≈1.27, ABS≈1.04, TPU≈1.21" error={errors.densityGcm3} tip="Material density for length→grams conversion">
-                      <input
-                        className={`${INPUT_CLASS} ${errors.densityGcm3 ? 'input-error' : ''}`}
-                        type="text"
-                        inputMode="decimal"
-                        placeholder="1.24"
-                        value={s.densityGcm3}
-                        onChange={(e) => setMany({ densityGcm3: parseInput(e.target.value) })}
-                      />
-                    </Field>
-                  </>
-                )}
-              </Row>
-
+                ))}
+                
+                <div className="flex justify-center pt-2">
+                  <button
+                    className="btn btn-soft btn-primary gap-2"
+                    onClick={addFilament}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                    </svg>
+                    Add Filament
+                  </button>
+                </div>
+              </div>
+              
               <Row>
                 <Field label="Support & waste" suffix="%" error={errors.supportWastePercent} tip="Extra material for supports, brim, purge, etc.">
                   <input
