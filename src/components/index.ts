@@ -3,4 +3,5 @@ export { Header } from './Header';
 export { FilamentCard } from './FilamentCard';
 export { CostBreakdown } from './CostBreakdown';
 export { ProfitCalculator } from './ProfitCalculator';
+export { CostChart } from './CostChart';
 export * from './ui';

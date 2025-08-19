@@ -4,6 +4,7 @@ import {
   FilamentCard, 
   CostBreakdown, 
   ProfitCalculator,
+  CostChart,
   Section,
   Field,
   Row,
@@ -657,6 +658,23 @@ export default function App() {
               vatAmount={calculations.vatAmount}
               total={calculations.total}
               onCopyBreakdown={copyBreakdown}
+            />
+
+            <CostChart
+              mode={s.mode}
+              currency={s.currency}
+              materialCost={calculations.materialCost}
+              energyCost={calculations.energyCost}
+              maintenanceCost={calculations.maintenanceCost}
+              depreciationCost={calculations.depreciationCost}
+              laborCost={calculations.laborCost}
+              preparationCost={calculations.preparationCost}
+              postProcessingCost={calculations.postProcessingCost}
+              shippingCost={calculations.shippingCost}
+              packagingCost={calculations.packagingCost}
+              vatAmount={calculations.vatAmount}
+              margin={calculations.margin}
+              total={calculations.total}
             />
 
             {/* Profit Calculator - Business mode only */}
