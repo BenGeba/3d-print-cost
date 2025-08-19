@@ -39,6 +39,10 @@ interface AppState {
   laborMinutes: number | string;
   postProcessingFixed: number | string;
   marginPercent: number | string;
+  shippingCost: number | string;
+  packagingCost: number | string;
+  vatPercent: number | string;
+  targetProfit: number | string;
   currency: string;
 }
 
@@ -151,6 +155,10 @@ const defaultState: AppState = {
   laborMinutes: 15,
   postProcessingFixed: 0,
   marginPercent: 0,
+  shippingCost: 0,
+  packagingCost: 0,
+  vatPercent: 0,
+  targetProfit: 0,
   currency: "EUR",
 };
 
@@ -348,7 +356,7 @@ function Line({ label, value, currency }: LineProps) {
     num: value ?? 0,
     currency,
     decimalPlaces: 2,
-    significantDecimalPlaces: 8,
+    significantDecimalPlaces: 2,
     locale: browserLocale
   });
   return (
@@ -596,10 +604,41 @@ export default function App() {
   }, [s.laborMinutes, s.laborRatePerHour]);
 
   const baseSubtotal = materialCost + energyCost + maintenanceCost + (s.mode === "business" ? depreciationCost + laborCost + number(s.postProcessingFixed, 0) : 0);
-  const margin = baseSubtotal * (number(s.marginPercent, 0) / 100);
-  const total = baseSubtotal + margin;
 
-  const fmt = (v: number): string => `${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${s.currency}`;
+  const shippingCost = s.mode === "business" ? number(s.shippingCost, 0) : 0;
+  const packagingCost = s.mode === "business" ? number(s.packagingCost, 0) : 0;
+  const subtotalWithExtras = baseSubtotal + shippingCost + packagingCost;
+  
+  const margin = subtotalWithExtras * (number(s.marginPercent, 0) / 100);
+  const netTotal = subtotalWithExtras + margin;
+
+  const vatPercent = s.mode === "business" ? number(s.vatPercent, 0) : 0;
+  const vatAmount = netTotal * (vatPercent / 100);
+  const total = netTotal + vatAmount;
+
+  // Profit calculator - work backwards from target profit
+  const targetProfit = s.mode === "business" ? number(s.targetProfit, 0) : 0;
+  const requiredSellingPrice = useMemo(() => {
+    if (targetProfit <= 0) return 0;
+    // Required price = (base costs + shipping + packaging + target profit) / (1 - vatPercent/100)
+    const baseCosts = baseSubtotal + shippingCost + packagingCost;
+    const preTaxPrice = baseCosts + targetProfit;
+    return vatPercent > 0 ? preTaxPrice / (1 - vatPercent / 100) : preTaxPrice;
+  }, [baseSubtotal, shippingCost, packagingCost, targetProfit, vatPercent]);
+
+  const fmt = (v: number): string => {
+    const browserLocale =
+      (typeof navigator !== "undefined" &&
+        (navigator.languages?.[0] || navigator.language)) ||
+      "de-DE";
+    return formatToCurrency({
+      num: v ?? 0,
+      currency: s.currency,
+      decimalPlaces: 2,
+      significantDecimalPlaces: 8,
+      locale: browserLocale
+    });
+  };
 
   // --- Inline validation ---
   const errors = useMemo<ValidationErrors>(() => {
@@ -655,6 +694,16 @@ export default function App() {
       const mp = number(s.marginPercent);
       if (mp < 0 || mp > 200) e.marginPercent = "0–200%";
     }
+
+    // Validate new business fields
+    if (s.shippingCost !== "" && number(s.shippingCost) < 0) e.shippingCost = "Must be ≥ 0";
+    if (s.packagingCost !== "" && number(s.packagingCost) < 0) e.packagingCost = "Must be ≥ 0";
+    if (s.vatPercent !== "") {
+      const vp = number(s.vatPercent);
+      if (vp < 0 || vp > 100) e.vatPercent = "0–100%";
+    }
+    if (s.targetProfit !== "" && number(s.targetProfit) < 0) e.targetProfit = "Must be ≥ 0";
+
     return e;
   }, [s]);
 
@@ -670,9 +719,15 @@ export default function App() {
         lines.push(`Depreciation: ${fmt(depreciationCost)}`);
         lines.push(`Labor: ${fmt(laborCost)}`);
         lines.push(`Post-processing: ${fmt(number(s.postProcessingFixed,0))}`);
+        if (shippingCost > 0) lines.push(`Shipping: ${fmt(shippingCost)}`);
+        if (packagingCost > 0) lines.push(`Packaging: ${fmt(packagingCost)}`);
       }
       if (number(s.marginPercent,0) > 0) {
         lines.push(`Margin (${s.marginPercent}%): ${fmt(margin)}`);
+      }
+      if (s.mode === 'business' && vatPercent > 0) {
+        lines.push(`Net total: ${fmt(netTotal)}`);
+        lines.push(`VAT (${vatPercent}%): ${fmt(vatAmount)}`);
       }
       lines.push(`Total: ${fmt(total)}`);
       const text = lines.join('\n');
@@ -1191,6 +1246,38 @@ export default function App() {
                   </Field>
                 </Row>
                 <Row>
+                  <Field label="Shipping cost" suffix={s.currency} error={errors.shippingCost} tip="Fixed shipping cost per order">
+                    <input
+                      className={`${INPUT_CLASS} ${errors.shippingCost ? 'input-error' : ''}`}
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0"
+                      value={s.shippingCost}
+                      onChange={(e) => setMany({ shippingCost: parseInput(e.target.value) })}
+                    />
+                  </Field>
+                  <Field label="Packaging cost" suffix={s.currency} error={errors.packagingCost} tip="Fixed packaging cost per order">
+                    <input
+                      className={`${INPUT_CLASS} ${errors.packagingCost ? 'input-error' : ''}`}
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0"
+                      value={s.packagingCost}
+                      onChange={(e) => setMany({ packagingCost: parseInput(e.target.value) })}
+                    />
+                  </Field>
+                </Row>
+                <Row>
+                  <Field label="VAT / Tax" suffix="%" error={errors.vatPercent} tip="VAT percentage applied to net total">
+                    <input
+                      className={`${INPUT_CLASS} ${errors.vatPercent ? 'input-error' : ''}`}
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0"
+                      value={s.vatPercent}
+                      onChange={(e) => setMany({ vatPercent: parseInput(e.target.value) })}
+                    />
+                  </Field>
                   <Field label="Margin" suffix="%" hint="Optional markup for quotes" error={errors.marginPercent} tip="Add-on percentage applied on subtotal">
                     <input
                       className={`${INPUT_CLASS} ${errors.marginPercent ? 'input-error' : ''}`}
@@ -1237,10 +1324,19 @@ export default function App() {
                     <Line label="Depreciation" value={depreciationCost} currency={s.currency} />
                     <Line label="Labor" value={laborCost} currency={s.currency} />
                     <Line label="Post-processing" value={number(s.postProcessingFixed, 0)} currency={s.currency} />
+                    {shippingCost > 0 && <Line label="Shipping" value={shippingCost} currency={s.currency} />}
+                    {packagingCost > 0 && <Line label="Packaging" value={packagingCost} currency={s.currency} />}
                   </>
                 )}
                 {number(s.marginPercent, 0) > 0 && (
                   <Line label={`Margin (${s.marginPercent}%)`} value={margin} currency={s.currency} />
+                )}
+                {s.mode === "business" && vatPercent > 0 && (
+                  <>
+                    <hr className="my-2" />
+                    <Line label="Net total" value={netTotal} currency={s.currency} />
+                    <Line label={`VAT (${vatPercent}%)`} value={vatAmount} currency={s.currency} />
+                  </>
                 )}
               </div>
               <hr className="my-4" />
@@ -1249,6 +1345,41 @@ export default function App() {
                 <div className="text-2xl font-bold">{fmt(total)}</div>
               </div>
             </div>
+
+            {/* Profit Calculator - Business mode only */}
+            {s.mode === "business" && (
+              <div className={CARD_CLASS}>
+                <h2 className="text-lg font-semibold mb-4">Profit Target Calculator</h2>
+                <div className="space-y-4">
+                  <Field 
+                    label="Target profit amount" 
+                    suffix={s.currency} 
+                    error={errors.targetProfit} 
+                    tip="Enter desired profit to calculate required selling price"
+                  >
+                    <input
+                      className={`${INPUT_CLASS} ${errors.targetProfit ? 'input-error' : ''}`}
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0"
+                      value={s.targetProfit}
+                      onChange={(e) => setMany({ targetProfit: parseInput(e.target.value) })}
+                    />
+                  </Field>
+                  {targetProfit > 0 && (
+                    <div className="bg-base-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">Required selling price:</span>
+                        <span className="text-xl font-bold text-primary">{fmt(requiredSellingPrice)}</span>
+                      </div>
+                      <div className="mt-2 text-sm text-base-content/70">
+                        For {fmt(targetProfit)} profit{vatPercent > 0 ? ` (includes ${vatPercent}% VAT)` : ''}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className={CARD_CLASS}>
               <h2 className="text-lg font-semibold mb-3">Quick tips</h2>
