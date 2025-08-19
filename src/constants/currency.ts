@@ -1,5 +1,5 @@
 // Currency formatting constants
-import type { CurrencyConfig } from '../types/currency';
+import type { CurrencyConfig } from '../types';
 
 export const DEFAULT_CURRENCY: CurrencyConfig = {
   id: 'USD',

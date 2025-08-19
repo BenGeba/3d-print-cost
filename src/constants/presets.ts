@@ -11,12 +11,15 @@ export const presets: Record<string, MaterialPreset> = {
 // ---------- Printer power presets (PLA baseline) ----------
 export const POWER_PRESETS: PowerPreset[] = [
   { key: "custom", label: "Custom (enter manually)", watts: null },
-  { key: "bambu_p1s", label: "Bambu Lab P1S (~105 W)", watts: 105 },
-  { key: "bambu_a1", label: "Bambu Lab A1 (~95 W)", watts: 95 },
-  { key: "bambu_a1_mini", label: "Bambu Lab A1 mini (~80 W)", watts: 80 },
-  { key: "bambu_x1c", label: "Bambu Lab X1C (~105 W)", watts: 105 },
-  { key: "prusa_mk4s", label: "Prusa MK4S (~80 W)", watts: 80 },
-  { key: "creality_ender3_v3", label: "Creality Ender-3 V3 (~110 W)", watts: 110 },
+  { key: "bambu_p1s", label: "BambuLab P1S (~120 W)", watts: 120 },
+  { key: "bambu_a1", label: "BambuLab A1 (~95 W)", watts: 95 },
+  { key: "bambu_a1_mini", label: "BambuLab A1 mini (~65 W)", watts: 65 },
+  { key: "bambu_x1c", label: "BambuLab X1C (~135 W)", watts: 135 },
+  { key: "bambu_h2d", label: "BambuLab H2D (~135 W)", watts: 135 },
+  { key: "prusa_mk4s", label: "Prusa MK4S (~100 W)", watts: 100 },
+  { key: "prusa_core_one", label: "Prusa Core One (~120 W)", watts: 120 },
+  { key: "prusa_xl", label: "Prusa XL (~140 W)", watts: 140 },
+  { key: "creality_ender3_v3", label: "Creality Ender-3 V3 (~85 W)", watts: 85 },
   { key: "elegoo_neptune4_pro", label: "Elegoo Neptune 4 Pro (~150 W)", watts: 150 },
 ];
 
