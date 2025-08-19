@@ -39,7 +39,7 @@ export const defaultState: AppState = {
 };
 
 // ---------- UI classes ----------
-export const CARD_CLASS = "card shadow p-6";
+export const CARD_CLASS = "card bg-base-100 shadow p-6";
 export const LABEL_CLASS = "block font-medium mb-1";
 export const INPUT_CLASS = "input input-bordered w-full";
 export const SUBTLE = "text-sm";
