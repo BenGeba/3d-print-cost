@@ -50,7 +50,10 @@ export function useValidation(s: AppState): ValidationErrors {
     if (s.maintenanceEurPerHour !== "" && number(s.maintenanceEurPerHour) < 0) e.maintenanceEurPerHour = "Must be ≥ 0";
     if (s.laborRatePerHour !== "" && number(s.laborRatePerHour) < 0) e.laborRatePerHour = "Must be ≥ 0";
     if (s.laborMinutes !== "" && number(s.laborMinutes) < 0) e.laborMinutes = "Must be ≥ 0";
-    if (s.postProcessingFixed !== "" && number(s.postProcessingFixed) < 0) e.postProcessingFixed = "Must be ≥ 0";
+    if (s.preparationMinutes !== "" && number(s.preparationMinutes) < 0) e.preparationMinutes = "Must be ≥ 0";
+    if (s.preparationHourlyRate !== "" && number(s.preparationHourlyRate) < 0) e.preparationHourlyRate = "Must be ≥ 0";
+    if (s.postProcessingMinutes !== "" && number(s.postProcessingMinutes) < 0) e.postProcessingMinutes = "Must be ≥ 0";
+    if (s.postProcessingHourlyRate !== "" && number(s.postProcessingHourlyRate) < 0) e.postProcessingHourlyRate = "Must be ≥ 0";
 
     if (s.marginPercent !== "") {
       const mp = number(s.marginPercent);

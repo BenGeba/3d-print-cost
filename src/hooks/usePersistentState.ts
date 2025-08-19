@@ -28,6 +28,20 @@ export function usePersistentState<T>(key: string, initial: T): [T, React.Dispat
           delete parsed.densityGcm3;
           delete parsed.material;
         }
+        
+        // Migration logic: convert legacy postProcessingFixed to new time-based fields
+        if (parsed && parsed.postProcessingFixed !== undefined && 
+            (parsed.preparationMinutes === undefined || parsed.preparationHourlyRate === undefined ||
+             parsed.postProcessingMinutes === undefined || parsed.postProcessingHourlyRate === undefined)) {
+          // Set all new fields to 0 to maintain existing behavior (was fixed cost, now time-based)
+          parsed.preparationMinutes = 0;
+          parsed.preparationHourlyRate = 0;
+          parsed.postProcessingMinutes = 0;
+          parsed.postProcessingHourlyRate = 0;
+          // Remove the old field
+          delete parsed.postProcessingFixed;
+        }
+        
         return { ...initial, ...parsed };
       }
       return initial;

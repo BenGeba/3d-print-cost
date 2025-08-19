@@ -12,7 +12,8 @@ interface CostBreakdownProps {
   maintenanceCost: number;
   depreciationCost: number;
   laborCost: number;
-  postProcessingFixed: number | string;
+  preparationCost: number;
+  postProcessingCost: number;
   shippingCost: number;
   packagingCost: number;
   marginPercent: number | string;
@@ -34,7 +35,8 @@ export function CostBreakdown({
   maintenanceCost,
   depreciationCost,
   laborCost,
-  postProcessingFixed,
+  preparationCost,
+  postProcessingCost,
   shippingCost,
   packagingCost,
   marginPercent,
@@ -81,7 +83,8 @@ export function CostBreakdown({
           <>
             <Line label="Depreciation" value={depreciationCost} currency={currency} />
             <Line label="Labor" value={laborCost} currency={currency} />
-            <Line label="Post-processing" value={number(postProcessingFixed, 0)} currency={currency} />
+            {preparationCost > 0 && <Line label="Preparation" value={preparationCost} currency={currency} />}
+            {postProcessingCost > 0 && <Line label="Post-processing" value={postProcessingCost} currency={currency} />}
             {shippingCost > 0 && <Line label="Shipping" value={shippingCost} currency={currency} />}
             {packagingCost > 0 && <Line label="Packaging" value={packagingCost} currency={currency} />}
           </>

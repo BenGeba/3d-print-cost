@@ -58,7 +58,8 @@ export default function App() {
       if (s.mode === 'business') {
         lines.push(`Depreciation: ${fmt(calculations.depreciationCost)}`);
         lines.push(`Labor: ${fmt(calculations.laborCost)}`);
-        lines.push(`Post-processing: ${fmt(number(s.postProcessingFixed,0))}`);
+        if (calculations.preparationCost > 0) lines.push(`Preparation: ${fmt(calculations.preparationCost)}`);
+        if (calculations.postProcessingCost > 0) lines.push(`Post-processing: ${fmt(calculations.postProcessingCost)}`);
         if (calculations.shippingCost > 0) lines.push(`Shipping: ${fmt(calculations.shippingCost)}`);
         if (calculations.packagingCost > 0) lines.push(`Packaging: ${fmt(calculations.packagingCost)}`);
       }
@@ -505,18 +506,19 @@ export default function App() {
                       onChange={(e) => setMany({ maintenanceEurPerHour: parseInput(e.target.value) })}
                     />
                   </Field>
-                  <Field label="Labor rate" suffix={`${s.currency}/h`} error={errors.laborRatePerHour} tip="Your hourly rate for handling & post">
-                    <input
-                      className={`${INPUT_CLASS} ${errors.laborRatePerHour ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={s.laborRatePerHour}
-                      onChange={(e) => setMany({ laborRatePerHour: parseInput(e.target.value) })}
-                    />
-                  </Field>
                 </Row>
+                  <div className="divider divider-primary"/>
                 <Row>
+                    <Field label="Labor rate" suffix={`${s.currency}/h`} error={errors.laborRatePerHour} tip="Your hourly rate for handling & post">
+                        <input
+                            className={`${INPUT_CLASS} ${errors.laborRatePerHour ? 'input-error' : ''}`}
+                            type="text"
+                            inputMode="decimal"
+                            placeholder="0"
+                            value={s.laborRatePerHour}
+                            onChange={(e) => setMany({ laborRatePerHour: parseInput(e.target.value) })}
+                        />
+                    </Field>
                   <Field label="Labor time" suffix="min" error={errors.laborMinutes} tip="Hands-on time (setup, cleanup)">
                     <input
                       className={`${INPUT_CLASS} ${errors.laborMinutes ? 'input-error' : ''}`}
@@ -527,17 +529,53 @@ export default function App() {
                       onChange={(e) => setMany({ laborMinutes: parseInput(e.target.value) })}
                     />
                   </Field>
-                  <Field label="Post-processing (fixed)" error={errors.postProcessingFixed} tip="Fixed cost for sanding, painting, etc.">
+                </Row>
+                  <div className="divider divider-primary"/>
+                <Row>
+                  <Field label="Preparation time" suffix="min" error={errors.preparationMinutes} tip="Time for pre-processing tasks">
                     <input
-                      className={`${INPUT_CLASS} ${errors.postProcessingFixed ? 'input-error' : ''}`}
+                      className={`${INPUT_CLASS} ${errors.preparationMinutes ? 'input-error' : ''}`}
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="0"
+                      value={s.preparationMinutes}
+                      onChange={(e) => setMany({ preparationMinutes: parseInput(e.target.value) })}
+                    />
+                  </Field>
+                  <Field label="Preparation rate" suffix={`${s.currency}/h`} error={errors.preparationHourlyRate} tip="Hourly rate for pre-processing tasks">
+                    <input
+                      className={`${INPUT_CLASS} ${errors.preparationHourlyRate ? 'input-error' : ''}`}
                       type="text"
                       inputMode="decimal"
                       placeholder="0"
-                      value={s.postProcessingFixed}
-                      onChange={(e) => setMany({ postProcessingFixed: parseInput(e.target.value) })}
+                      value={s.preparationHourlyRate}
+                      onChange={(e) => setMany({ preparationHourlyRate: parseInput(e.target.value) })}
                     />
                   </Field>
                 </Row>
+                <Row>
+                  <Field label="Post-processing time" suffix="min" error={errors.postProcessingMinutes} tip="Time for sanding, painting, etc.">
+                    <input
+                      className={`${INPUT_CLASS} ${errors.postProcessingMinutes ? 'input-error' : ''}`}
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="0"
+                      value={s.postProcessingMinutes}
+                      onChange={(e) => setMany({ postProcessingMinutes: parseInput(e.target.value) })}
+                    />
+                  </Field>
+                  <Field label="Post-processing rate" suffix={`${s.currency}/h`} error={errors.postProcessingHourlyRate} tip="Hourly rate for sanding, painting, etc.">
+                    <input
+                      className={`${INPUT_CLASS} ${errors.postProcessingHourlyRate ? 'input-error' : ''}`}
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0"
+                      value={s.postProcessingHourlyRate}
+                      onChange={(e) => setMany({ postProcessingHourlyRate: parseInput(e.target.value) })}
+                    />
+                  </Field>
+                </Row>
+                  <div className="divider divider-primary"/>
                 <Row>
                   <Field label="Shipping cost" suffix={s.currency} error={errors.shippingCost} tip="Fixed shipping cost per order">
                     <input
@@ -610,7 +648,8 @@ export default function App() {
               maintenanceCost={calculations.maintenanceCost}
               depreciationCost={calculations.depreciationCost}
               laborCost={calculations.laborCost}
-              postProcessingFixed={s.postProcessingFixed}
+              preparationCost={calculations.preparationCost}
+              postProcessingCost={calculations.postProcessingCost}
               shippingCost={calculations.shippingCost}
               packagingCost={calculations.packagingCost}
               marginPercent={s.marginPercent}
