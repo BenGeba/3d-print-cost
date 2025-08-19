@@ -1,10 +1,7 @@
 // Code snippets from https://gist.github.com/alamilladev/52c873f1d956afbc533e3e58256fd314
 
-export const defaultCurrency = {
-  id: 'USD',
-  symbol: '$',
-  full: 'USD$',
-};
+import type { FormatCurrencyInput } from '../types';
+import { DEFAULT_CURRENCY, SYMBOL_TO_ISO, CURRENCY_FORMATTING } from '../constants';
 
 function convertToNonScientific(num: string | number): string {
   if (typeof num === 'number') {
@@ -62,36 +59,21 @@ function formatWithSignificantDecimals(
   return convertToNonScientific(roundedNumber);
 }
 
-export type FormatCurrencyInput = {
-  num?: number | string | null;
-  currency?: string | null;
-  locale?: string;
-  decimalPlaces?: number | null;
-  significantDecimalPlaces?: number | null;
-};
 
-const symbolToISO: Record<string, string> = {
-  "€": "EUR",
-  "$": "USD",
-  "£": "GBP",
-  "¥": "JPY",
-  "CHF": "CHF",
-  "zł": "PLN"
-};
 
 function toISO4217(cur?: string | null): string {
-  const fallback = (typeof defaultCurrency?.id === "string" && defaultCurrency.id) || "USD";
+  const fallback = (typeof DEFAULT_CURRENCY?.id === "string" && DEFAULT_CURRENCY.id) || "USD";
   if (!cur) return fallback;
   const c = cur.trim();
   if (/^[A-Za-z]{3}$/.test(c)) return c.toUpperCase();
-  return symbolToISO[c] || fallback;
+  return SYMBOL_TO_ISO[c] || fallback;
 }
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 const safeDigits = (minFD: number, maxFD: number) => {
-    const min = clamp(minFD, 0, 20);
-    const maxClamped = clamp(maxFD, 0, 20);
+    const min = clamp(minFD, CURRENCY_FORMATTING.MIN_DECIMAL_PLACES, CURRENCY_FORMATTING.MAX_DECIMAL_PLACES);
+    const maxClamped = clamp(maxFD, CURRENCY_FORMATTING.MIN_DECIMAL_PLACES, CURRENCY_FORMATTING.MAX_DECIMAL_PLACES);
     const max = Math.max(min, maxClamped);
     return [min, max] as const;
 };
@@ -106,8 +88,8 @@ export function formatToCurrency(input: FormatCurrencyInput): string {
         (typeof navigator !== "undefined" ? (navigator.languages?.[0] || navigator.language) : undefined);
 
     const currency = toISO4217(input.currency);
-    const dp = input.decimalPlaces ?? 2;
-    const sdp = input.significantDecimalPlaces ?? 8;
+    const dp = input.decimalPlaces ?? CURRENCY_FORMATTING.DEFAULT_DECIMAL_PLACES;
+    const sdp = input.significantDecimalPlaces ?? CURRENCY_FORMATTING.DEFAULT_SIGNIFICANT_DECIMAL_PLACES;
 
     let minFD: number;
     let maxFD: number;
@@ -117,8 +99,8 @@ export function formatToCurrency(input: FormatCurrencyInput): string {
         const withSig = formatWithSignificantDecimals(abs, sdp);
         const decLen = withSig.split(".")[1]?.length ?? 0;
 
-        const digits = Math.max(2, Math.min(decLen, sdp));
-        [minFD, maxFD] = safeDigits(2, digits);
+        const digits = Math.max(CURRENCY_FORMATTING.DEFAULT_DECIMAL_PLACES, Math.min(decLen, sdp));
+        [minFD, maxFD] = safeDigits(CURRENCY_FORMATTING.DEFAULT_DECIMAL_PLACES, digits);
 
         value = Math.sign(n) < 0 ? -Number(withSig) : Number(withSig);
     } else {

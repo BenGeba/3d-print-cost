@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-
-interface BeforeInstallPromptEvent extends Event {
-    prompt: () => Promise<void>;
-    userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
-
-type InstallState = 'available' | 'installing' | 'installed' | 'failed' | 'unavailable';
+import type { BeforeInstallPromptEvent, InstallState } from '../types';
+import { 
+    PWA_TIMEOUTS, 
+    PWA_ERROR_MESSAGES, 
+    PWA_BUTTON_TEXT, 
+    PWA_BUTTON_CLASSES 
+} from '../constants';
 
 export default function InstallPWAButton() {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -76,7 +76,7 @@ export default function InstallPWAButton() {
 
     const handleInstall = async () => {
         if (!deferredPrompt || installState !== 'available') {
-            setErrorMessage('Installation prompt is not available');
+            setErrorMessage(PWA_ERROR_MESSAGES.PROMPT_NOT_AVAILABLE);
             return;
         }
 
@@ -87,14 +87,14 @@ export default function InstallPWAButton() {
             // Call the prompt method with timeout protection
             const promptPromise = deferredPrompt.prompt();
             const timeoutPromise = new Promise<void>((_, reject) =>
-                setTimeout(() => reject(new Error('Install prompt timeout')), 10000)
+                setTimeout(() => reject(new Error('Install prompt timeout')), PWA_TIMEOUTS.INSTALL_PROMPT)
             );
 
             await Promise.race([promptPromise, timeoutPromise]);
 
             // Wait for user choice with timeout protection
             const choiceTimeoutPromise = new Promise<{ outcome: 'accepted' | 'dismissed' }>((_, reject) =>
-                setTimeout(() => reject(new Error('User choice timeout')), 15000)
+                setTimeout(() => reject(new Error('User choice timeout')), PWA_TIMEOUTS.USER_CHOICE)
             );
 
             const result = await Promise.race([
@@ -108,10 +108,10 @@ export default function InstallPWAButton() {
             } else {
                 // User dismissed the prompt
                 setInstallState('available');
-                setErrorMessage('Installation was cancelled');
+                setErrorMessage(PWA_ERROR_MESSAGES.INSTALLATION_CANCELLED);
                 // Clear the prompt as it's typically single-use
                 setDeferredPrompt(null);
-                setTimeout(() => setErrorMessage(null), 3000);
+                setTimeout(() => setErrorMessage(null), PWA_TIMEOUTS.ERROR_MESSAGE_DISPLAY);
             }
 
         } catch (error) {
@@ -119,13 +119,13 @@ export default function InstallPWAButton() {
             setInstallState('failed');
 
             // Provide user-friendly error messages
-            let userMessage = 'Installation failed. Please try again.';
+            let userMessage: string = PWA_ERROR_MESSAGES.INSTALLATION_FAILED;
 
             if (error instanceof Error) {
                 if (error.message.includes('timeout')) {
-                    userMessage = 'Installation timed out. Please try again.';
+                    userMessage = PWA_ERROR_MESSAGES.INSTALLATION_TIMEOUT;
                 } else if (error.message.includes('aborted')) {
-                    userMessage = 'Installation was cancelled.';
+                    userMessage = PWA_ERROR_MESSAGES.INSTALLATION_ABORTED;
                 }
             }
 
@@ -136,7 +136,7 @@ export default function InstallPWAButton() {
             setTimeout(() => {
                 setInstallState('unavailable');
                 setErrorMessage(null);
-            }, 5000);
+            }, PWA_TIMEOUTS.RETRY_RESET);
         }
     };
 
@@ -160,23 +160,23 @@ export default function InstallPWAButton() {
     const getButtonText = () => {
         switch (installState) {
             case 'installing':
-                return 'Installing...';
+                return PWA_BUTTON_TEXT.INSTALLING;
             case 'failed':
-                return 'Retry Install';
+                return PWA_BUTTON_TEXT.RETRY;
             default:
-                return 'Install App';
+                return PWA_BUTTON_TEXT.INSTALL;
         }
     };
 
     const getButtonClass = () => {
-        const baseClass = "btn btn-sm transition-all duration-200";
+        const baseClass = PWA_BUTTON_CLASSES.BASE;
         switch (installState) {
             case 'installing':
-                return `${baseClass} btn-disabled loading`;
+                return `${baseClass} ${PWA_BUTTON_CLASSES.INSTALLING}`;
             case 'failed':
-                return `${baseClass} btn-warning`;
+                return `${baseClass} ${PWA_BUTTON_CLASSES.FAILED}`;
             default:
-                return `${baseClass} btn-primary hover:btn-primary-focus`;
+                return `${baseClass} ${PWA_BUTTON_CLASSES.DEFAULT}`;
         }
     };
 
