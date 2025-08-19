@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import tailwindcss from '@tailwindcss/vite'
 
-export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/3d-print-cost/' : '/',
+export default defineConfig(() => ({
+  base: '/',
   plugins: [
     react(),
     tailwindcss(),
