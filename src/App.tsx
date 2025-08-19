@@ -334,14 +334,12 @@ export default function App() {
             <Section
               title="Filaments"
               aside={
-                <div className="flex items-center gap-3">
-                  <span className="text-sm">By grams</span>
                   <Switch
                     checked={s.filamentPricingMode === "length"}
                     onChange={(v) => setMany({ filamentPricingMode: v ? "length" : "grams" })}
+                    labelLeft="By grams"
                     labelRight="By length"
                   />
-                </div>
               }
             >
               <div className="space-y-4">

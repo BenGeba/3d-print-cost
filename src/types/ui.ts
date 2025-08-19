@@ -17,6 +17,7 @@ export interface SwitchProps {
   onChange: (value: boolean) => void;
   labelLeft?: string;
   labelRight?: string;
+  name?: string;
 }
 
 export interface SectionProps {
