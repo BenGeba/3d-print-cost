@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import QRCode from 'react-qr-code';
+import QRCode from 'react-qrcode-logo';
 import { AppState } from '../types';
 import { generateShareUrl } from '../utils';
 
@@ -152,9 +152,16 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
                 className="inline-block p-4 bg-white rounded-lg"
               >
                 <QRCode
-                  size={200}
+                  size={256}
                   value={shareData}
-                  level="M"
+                  ecLevel="M"
+                  qrStyle={"squares"}
+                  logoImage="/logo.svg"
+                  logoOpacity={0.8}
+                  logoPaddingRadius={80}
+                  logoPadding={4}
+                  logoPaddingStyle={"circle"}
+                  removeQrCodeBehindLogo={true}
                 />
               </div>
               

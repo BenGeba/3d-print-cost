@@ -1,21 +1,166 @@
 import LZString from 'lz-string';
 import { AppState } from '../types';
 
-/**
- * Compresses AppState data to a URL-safe string using lz-string
- */
+// Shortened field names for compression (maps full field names to short ones)
+const FIELD_MAP: Record<string, string> = {
+  mode: 'm',
+  filamentPricingMode: 'fpm',
+  filaments: 'f',
+  pricePerKg: 'ppk',
+  filamentUsedGrams: 'fug',
+  filamentDiameter: 'fd',
+  filamentLengthMeters: 'flm',
+  densityGcm3: 'dg',
+  material: 'mat',
+  supportWastePercent: 'swp',
+  failureRatePercent: 'frp',
+  powerProfile: 'pp',
+  avgPowerW: 'apw',
+  printTimeHours: 'pth',
+  printTimeMinutes: 'ptm',
+  energyPricePerKWh: 'epk',
+  printerPrice: 'prp',
+  printerLifetimeHours: 'plh',
+  maintenanceEurPerHour: 'meh',
+  laborRatePerHour: 'lrh',
+  laborMinutes: 'lm',
+  preparationMinutes: 'pm',
+  preparationHourlyRate: 'phr',
+  postProcessingMinutes: 'ppm',
+  postProcessingHourlyRate: 'pphr',
+  marginPercent: 'mp',
+  shippingCost: 'sc',
+  packagingCost: 'pc',
+  vatPercent: 'vp',
+  targetProfit: 'tp',
+  currency: 'c'
+};
+
+// Reverse mapping for decompression
+const REVERSE_FIELD_MAP = Object.fromEntries(
+  Object.entries(FIELD_MAP).map(([key, value]) => [value, key])
+);
+
+// Filament field mapping
+const FILAMENT_FIELD_MAP: Record<string, string> = {
+  id: 'i',
+  name: 'n',
+  pricePerKg: 'p',
+  usedGrams: 'u',
+  lengthMeters: 'l',
+  diameter: 'd',
+  density: 'den',
+  material: 'm'
+};
+
+const REVERSE_FILAMENT_FIELD_MAP = Object.fromEntries(
+  Object.entries(FILAMENT_FIELD_MAP).map(([key, value]) => [value, key])
+);
+
+const DEFAULT_VALUES: Partial<AppState> = {
+  mode: 'hobby',
+  filamentPricingMode: 'grams',
+  supportWastePercent: 0,
+  failureRatePercent: 0,
+  powerProfile: 'custom',
+  avgPowerW: 0,
+  printTimeHours: 0,
+  printTimeMinutes: 0,
+  energyPricePerKWh: 0,
+  printerPrice: 0,
+  printerLifetimeHours: 0,
+  maintenanceEurPerHour: 0,
+  laborRatePerHour: 0,
+  laborMinutes: 0,
+  preparationMinutes: 0,
+  preparationHourlyRate: 0,
+  postProcessingMinutes: 0,
+  postProcessingHourlyRate: 0,
+  marginPercent: 0,
+  shippingCost: 0,
+  packagingCost: 0,
+  vatPercent: 0,
+  targetProfit: 0,
+  currency: 'EUR'
+};
+
+function optimizeForCompression(appState: AppState): any {
+  const optimized: any = {};
+  
+  // Process main fields
+  for (const [fullKey, shortKey] of Object.entries(FIELD_MAP)) {
+    const value = (appState as any)[fullKey];
+    const defaultValue = (DEFAULT_VALUES as any)[fullKey];
+    
+    // Skip if value equals default or is empty/null/undefined
+    if (value !== undefined && value !== null && value !== '' && value !== defaultValue) {
+      // Convert string numbers to actual numbers where possible for better compression
+      if (typeof value === 'string' && !isNaN(Number(value)) && value.trim() !== '') {
+        optimized[shortKey] = Number(value);
+      } else {
+        optimized[shortKey] = value;
+      }
+    }
+  }
+  
+  // Process filaments with shortened field names
+  if (appState.filaments && appState.filaments.length > 0) {
+    optimized.f = appState.filaments.map(filament => {
+      const optimizedFilament: any = {};
+      for (const [fullKey, shortKey] of Object.entries(FILAMENT_FIELD_MAP)) {
+        const value = (filament as any)[fullKey];
+        if (value !== undefined && value !== null && value !== '') {
+          // Convert string numbers to actual numbers where possible
+          if (typeof value === 'string' && !isNaN(Number(value)) && value.trim() !== '') {
+            optimizedFilament[shortKey] = Number(value);
+          } else {
+            optimizedFilament[shortKey] = value;
+          }
+        }
+      }
+      return optimizedFilament;
+    });
+  }
+  
+  return optimized;
+}
+
+function restoreFromOptimized(optimized: any): AppState {
+  const restored: any = { ...DEFAULT_VALUES };
+
+  for (const [shortKey, fullKey] of Object.entries(REVERSE_FIELD_MAP)) {
+    if (optimized[shortKey] !== undefined) {
+      restored[fullKey] = optimized[shortKey];
+    }
+  }
+
+  if (optimized.f && Array.isArray(optimized.f)) {
+    restored.filaments = optimized.f.map((filament: any) => {
+      const restoredFilament: any = {};
+      for (const [shortKey, fullKey] of Object.entries(REVERSE_FILAMENT_FIELD_MAP)) {
+        if (filament[shortKey] !== undefined) {
+          restoredFilament[fullKey] = filament[shortKey];
+        }
+      }
+      return restoredFilament;
+    });
+  } else {
+    restored.filaments = [];
+  }
+  
+  return restored as AppState;
+}
+
 export function compressAppState(appState: AppState): string {
   try {
-    const json = JSON.stringify(appState);
+    const optimized = optimizeForCompression(appState);
+    const json = JSON.stringify(optimized);
     return LZString.compressToEncodedURIComponent(json);
   } catch (error) {
     throw new Error('Error compressing data');
   }
 }
 
-/**
- * Decompresses URL-safe string back to AppState using lz-string
- */
 export function decompressAppState(compressedData: string): AppState {
   try {
     const json = LZString.decompressFromEncodedURIComponent(compressedData);
@@ -23,36 +168,51 @@ export function decompressAppState(compressedData: string): AppState {
       throw new Error('Error decompressing data');
     }
     const parsed = JSON.parse(json);
-    
-    // Basic validation to ensure it looks like AppState
+
     if (!parsed || typeof parsed !== 'object') {
       throw new Error('Invalid data structure');
     }
+
+    const hasShortKeys = Object.keys(parsed).some(key => Object.values(FIELD_MAP).includes(key));
     
-    // Check for required fields
-    const requiredFields = ['mode', 'filaments', 'currency'] as const;
-    for (const field of requiredFields) {
-      if (!(field in parsed)) {
-        throw new Error(`Missing field: ${field}`);
+    if (hasShortKeys) {
+      const restored = restoreFromOptimized(parsed);
+
+      if (!['hobby', 'business'].includes(restored.mode)) {
+        throw new Error('Invalid mode');
       }
+      
+      if (!Array.isArray(restored.filaments)) {
+        throw new Error('Invalid filament data');
+      }
+      
+      return restored;
+    } else {
+      // Legacy format - validate and return as-is for backward compatibility
+      const requiredFields = ['mode', 'filaments', 'currency'] as const;
+      for (const field of requiredFields) {
+        if (!(field in parsed)) {
+          throw new Error(`Missing field: ${field}`);
+        }
+      }
+      
+      // Validate mode field
+      if (!['hobby', 'business'].includes(parsed.mode)) {
+        throw new Error('Invalid mode');
+      }
+      
+      // Validate filaments array
+      if (!Array.isArray(parsed.filaments)) {
+        throw new Error('Invalid filament data');
+      }
+      
+      // Validate currency
+      if (typeof parsed.currency !== 'string' || !parsed.currency.trim()) {
+        throw new Error('Invalid currency');
+      }
+      
+      return parsed as AppState;
     }
-    
-    // Validate mode field
-    if (!['hobby', 'business'].includes(parsed.mode)) {
-      throw new Error('Invalid mode');
-    }
-    
-    // Validate filaments array
-    if (!Array.isArray(parsed.filaments)) {
-      throw new Error('Invalid filament data');
-    }
-    
-    // Validate currency
-    if (typeof parsed.currency !== 'string' || !parsed.currency.trim()) {
-      throw new Error('Invalid currency');
-    }
-    
-    return parsed as AppState;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Error decompressing data: ${error.message}`);
