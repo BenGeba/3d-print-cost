@@ -9,10 +9,11 @@ import {
   Field,
   Row,
   Switch,
-  Info
+  Info,
+  ShareModal
 } from "./components";
 import { usePersistentState, useCalculations, useValidation } from "./hooks";
-import { number, parseInput, prettyDuration, formatToCurrency } from "./utils";
+import { number, parseInput, prettyDuration, formatToCurrency, parseUrlData, clearUrlData } from "./utils";
 import { 
   presets, 
   POWER_PRESETS, 
@@ -27,9 +28,26 @@ import { AppState, Filament, Toast } from "./types";
 export default function App() {
   const [s, set] = usePersistentState<AppState>("print-cost-calc:v1", defaultState);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   
   const calculations = useCalculations(s);
   const errors = useValidation(s);
+
+  // Check for URL parameters on app startup
+  useEffect(() => {
+    const urlData = parseUrlData();
+    if (urlData) {
+      try {
+        set(urlData);
+        clearUrlData();
+        pushToast('success', 'Calculation loaded successfully', 4000);
+      } catch (error) {
+        clearUrlData();
+        pushToast('error', 'Error loading calculation from URL', 5000);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // --- Toast helpers (daisyUI toast + alert) ---
   function pushToast(
@@ -87,6 +105,11 @@ export default function App() {
     } catch (e) {
       pushToast('error', 'Copy failed');
     }
+  }
+
+  // Handle share modal opening
+  function handleShare(): void {
+    setShareModalOpen(true);
   }
 
   // Undo-able mode toggle
@@ -658,6 +681,7 @@ export default function App() {
               vatAmount={calculations.vatAmount}
               total={calculations.total}
               onCopyBreakdown={copyBreakdown}
+              onShare={handleShare}
             />
 
             <CostChart
@@ -717,6 +741,15 @@ export default function App() {
           Built for makers • All calculations client-side • Tailwind-ready
         </footer>
       </div>
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        appState={s}
+        onSuccess={(message) => pushToast('success', message)}
+        onError={(message) => pushToast('error', message)}
+      />
     </div>
   );
 }
