@@ -1,6 +1,8 @@
 import { type ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Switch } from './ui';
 import InstallPWAButton from './InstallPWAButton';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { presets } from '../constants';
 
 interface HeaderProps {
@@ -24,13 +26,15 @@ export function Header({
   onApplyPreset, 
   onResetClick 
 }: HeaderProps) {
+  const { t } = useTranslation();
+  
   return (
     <header className="mb-8">
       {/* Title */}
       <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold">3D Print Cost Calculator</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">{t('app.title')}</h1>
         <p className="mt-1 text-sm md:text-base text-base-content/70">
-          Plan reliable costs for your FDM prints. Save presets, switch modes, and get a transparent breakdown.
+            {t('app.subtitle')}
         </p>
       </div>
       
@@ -55,14 +59,15 @@ export function Header({
           <Switch
             checked={mode === "business"}
             onChange={onModeToggle}
-            labelLeft="Hobby"
-            labelRight="Business"
+            labelLeft={t('app.modes.hobby')}
+            labelRight={t('app.modes.business')}
           />
         </div>
         
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           <button className="btn btn-soft btn-error" onClick={onResetClick}>
-            Reset
+            {t('buttons.resetSettings')}
           </button>
           <InstallPWAButton />
         </div>

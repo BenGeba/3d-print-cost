@@ -1,0 +1,11 @@
+{
+  "errors": {
+    "required": "This field is required",
+    "positiveNumber": "Must be a positive number",
+    "range": "Must be between {{min}} and {{max}}",
+    "invalidNumber": "Invalid number",
+    "invalidEmail": "Invalid email address",
+    "tooLong": "Text is too long",
+    "tooShort": "Text is too short"
+  }
+}

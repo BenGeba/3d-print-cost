@@ -212,8 +212,8 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
                 className="btn btn-outline w-full justify-start"
                 onClick={() => setShareOption('qr')}
               >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h2M4 4h4m0 0v4m0 0h4m0 0V4M8 8h.01M20 8h.01M8 20h.01M20 20h.01" />
+                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zM15 15h1v1h-1v-1zM13 13h1v1h-1v-1zM14 14h1v1h-1v-1zM15 13h1v1h-1v-1zM17 13h1v1h-1v-1zM19 13h1v1h-1v-1zM17 15h1v1h-1v-1zM19 15h1v1h-1v-1zM17 17h1v1h-1v-1zM19 17h1v1h-1v-1zM21 13h1v1h-1v-1zM21 15h1v1h-1v-1zM13 15h1v1h-1v-1zM13 17h1v1h-1v-1zM15 17h1v1h-1v-1zM13 19h1v1h-1v-1zM15 19h1v1h-1v-1zM17 19h1v1h-1v-1zM19 19h1v1h-1v-1zM21 17h1v1h-1v-1zM21 19h1v1h-1v-1zM13 21h1v1h-1v-1zM15 21h1v1h-1v-1zM17 21h1v1h-1v-1zM19 21h1v1h-1v-1zM21 21h1v1h-1v-1z"/>
                 </svg>
                 Create Link with Calculation
               </button>

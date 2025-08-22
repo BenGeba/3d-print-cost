@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Line, InfoLine } from './ui';
 import { CARD_CLASS } from '../constants';
 import { formatToCurrency, number, prettyDuration } from '../utils';
@@ -49,6 +50,8 @@ export function CostBreakdown({
   onCopyBreakdown,
   onShare
 }: CostBreakdownProps) {
+  const { t } = useTranslation();
+  
   const fmt = (v: number): string => {
     const browserLocale =
       (typeof navigator !== "undefined" &&
@@ -66,14 +69,14 @@ export function CostBreakdown({
   return (
     <div className={CARD_CLASS}>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">Breakdown</h2>
+        <h2 className="text-lg font-semibold">{t('costBreakdown.title')}</h2>
         <div className="flex items-center gap-2">
-          <button className="btn btn-soft btn-primary" onClick={onCopyBreakdown} title="Copy breakdown">
+          <button className="btn btn-soft btn-primary" onClick={onCopyBreakdown} title={t('buttons.copyBreakdown')}>
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
           </button>
-          <button className="btn btn-soft btn-secondary" onClick={onShare} title="Share">
+          <button className="btn btn-soft btn-secondary" onClick={onShare} title={t('buttons.share')}>
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
             </svg>
@@ -82,36 +85,36 @@ export function CostBreakdown({
       </div>
       <div className="space-y-3">
         <InfoLine 
-          label="Print time" 
+          label={t('fields.printTime')} 
           value={prettyDuration(number(printTimeHours, 0), number(printTimeMinutes, 0))} 
         />
-        <Line label="Material" value={materialCost} currency={currency} />
-        <Line label="Energy" value={energyCost} currency={currency} />
-        <Line label="Maintenance" value={maintenanceCost} currency={currency} />
+        <Line label={t('costBreakdown.material')} value={materialCost} currency={currency} />
+        <Line label={t('costBreakdown.energy')} value={energyCost} currency={currency} />
+        <Line label={t('costBreakdown.maintenance')} value={maintenanceCost} currency={currency} />
         {mode === "business" && (
           <>
-            <Line label="Depreciation" value={depreciationCost} currency={currency} />
-            <Line label="Labor" value={laborCost} currency={currency} />
-            {preparationCost > 0 && <Line label="Preparation" value={preparationCost} currency={currency} />}
-            {postProcessingCost > 0 && <Line label="Post-processing" value={postProcessingCost} currency={currency} />}
-            {shippingCost > 0 && <Line label="Shipping" value={shippingCost} currency={currency} />}
-            {packagingCost > 0 && <Line label="Packaging" value={packagingCost} currency={currency} />}
+            <Line label={t('costBreakdown.depreciation')} value={depreciationCost} currency={currency} />
+            <Line label={t('costBreakdown.labor')} value={laborCost} currency={currency} />
+            {preparationCost > 0 && <Line label={t('costBreakdown.preparation')} value={preparationCost} currency={currency} />}
+            {postProcessingCost > 0 && <Line label={t('costBreakdown.postProcessing')} value={postProcessingCost} currency={currency} />}
+            {shippingCost > 0 && <Line label={t('costBreakdown.shipping')} value={shippingCost} currency={currency} />}
+            {packagingCost > 0 && <Line label={t('costBreakdown.packaging')} value={packagingCost} currency={currency} />}
           </>
         )}
         {number(marginPercent, 0) > 0 && (
-          <Line label={`Margin (${marginPercent}%)`} value={margin} currency={currency} />
+          <Line label={t('costBreakdown.marginWithPercent', { percent: marginPercent })} value={margin} currency={currency} />
         )}
         {mode === "business" && vatPercent > 0 && (
           <>
             <hr className="my-2" />
-            <Line label="Net total" value={netTotal} currency={currency} />
-            <Line label={`VAT (${vatPercent}%)`} value={vatAmount} currency={currency} />
+            <Line label={t('costBreakdown.netTotal')} value={netTotal} currency={currency} />
+            <Line label={t('costBreakdown.vatWithPercent', { percent: vatPercent })} value={vatAmount} currency={currency} />
           </>
         )}
       </div>
       <hr className="my-4" />
       <div className="flex items-center justify-between">
-        <div className="font-semibold">Total</div>
+        <div className="font-semibold">{t('costBreakdown.total')}</div>
         <div className="text-2xl text-primary font-bold">{fmt(total)}</div>
       </div>
     </div>

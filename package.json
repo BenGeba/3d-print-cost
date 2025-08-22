@@ -17,9 +17,11 @@
     "@mui/x-charts": "^8.10.1",
     "@react-pdf/renderer": "^4.3.0",
     "@tailwindcss/vite": "^4.1.12",
+    "i18next": "^25.4.0",
     "lz-string": "^1.5.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-i18next": "^15.7.1",
     "react-qrcode-logo": "^4.0.0"
   },
   "devDependencies": {

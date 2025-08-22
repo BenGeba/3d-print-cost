@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { FilamentCardProps } from '../types';
 import { presets, MATERIALS, INPUT_CLASS } from '../constants';
 import { Field, Row } from './ui';
@@ -11,6 +12,8 @@ export function FilamentCard({
   errors, 
   canRemove 
 }: FilamentCardProps) {
+  const { t } = useTranslation();
+  
   // Helper to parse input value for controlled components
   const parseInput = (v: string): string | number => {
     if (v === "") return "";
@@ -23,11 +26,11 @@ export function FilamentCard({
       <div className="card-body">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex-1">
-            <Field label="Name" tip="Custom label for this filament">
+            <Field label={t('fields.name')} tip={t('tooltips.filamentName')}>
               <input
                 className={INPUT_CLASS}
                 type="text"
-                placeholder="Filament name"
+                placeholder={t('placeholders.filamentName')}
                 value={filament.name}
                 onChange={(e) => onUpdate(filament.id, { name: e.target.value })}
               />
@@ -36,7 +39,7 @@ export function FilamentCard({
           <div className="flex items-center gap-2">
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn btn-sm btn-ghost">
-                Presets
+                {t('buttons.presets')}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                   <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
                 </svg>
@@ -53,7 +56,7 @@ export function FilamentCard({
               <button
                 className="btn btn-sm btn-error btn-soft"
                 onClick={() => onRemove(filament.id)}
-                title="Remove filament"
+                title={t('buttons.removeFilament')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
@@ -64,7 +67,7 @@ export function FilamentCard({
         </div>
         
         <Row>
-          <Field label="Material">
+          <Field label={t('fields.material')}>
             <select
               className="select select-bordered"
               value={filament.material}
@@ -76,9 +79,9 @@ export function FilamentCard({
             </select>
           </Field>
           <Field 
-            label="Price per kg" 
+            label={t('fields.pricePerKg')} 
             error={errors[`filament-${filament.id}-pricePerKg` as keyof typeof errors]} 
-            tip="Material price per kilogram"
+            tip={t('tooltips.materialPrice')}
           >
             <input
               className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-pricePerKg` as keyof typeof errors] ? 'input-error' : ''}`}
@@ -94,10 +97,10 @@ export function FilamentCard({
         <Row>
           {filamentPricingMode === "grams" ? (
             <Field 
-              label="Used amount" 
-              suffix="grams" 
+              label={t('fields.usedAmount')} 
+              suffix={t('units.grams')} 
               error={errors[`filament-${filament.id}-usedGrams` as keyof typeof errors]} 
-              tip="Use slicer estimate or measured weight"
+              tip={t('tooltips.usedAmount')}
             >
               <input
                 className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-usedGrams` as keyof typeof errors] ? 'input-error' : ''}`}
@@ -111,10 +114,10 @@ export function FilamentCard({
           ) : (
             <>
               <Field 
-                label="Length" 
-                suffix="meters" 
+                label={t('fields.length')} 
+                suffix="m" 
                 error={errors[`filament-${filament.id}-lengthMeters` as keyof typeof errors]} 
-                tip="From slicer or spool meter counter"
+                tip={t('tooltips.filamentLength')}
               >
                 <input
                   className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-lengthMeters` as keyof typeof errors] ? 'input-error' : ''}`}
@@ -126,10 +129,10 @@ export function FilamentCard({
                 />
               </Field>
               <Field 
-                label="Diameter" 
-                suffix="mm" 
+                label={t('fields.diameter')} 
+                suffix={t('units.millimeters')} 
                 error={errors[`filament-${filament.id}-diameter` as keyof typeof errors]} 
-                tip="Typical: 1.75 mm or 2.85 mm"
+                tip={t('tooltips.filamentDiameter')}
               >
                 <input
                   className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-diameter` as keyof typeof errors] ? 'input-error' : ''}`}
@@ -147,11 +150,11 @@ export function FilamentCard({
         {filamentPricingMode === "length" && (
           <Row>
             <Field 
-              label="Density" 
+              label={t('fields.density')} 
               suffix="g/cm³" 
-              hint="PLA≈1.24, PETG≈1.27, ABS≈1.04, TPU≈1.21" 
+              hint={t('hints.densityHint')} 
               error={errors[`filament-${filament.id}-density` as keyof typeof errors]} 
-              tip="Material density for length→grams conversion"
+              tip={t('tooltips.densityConversion')}
             >
               <input
                 className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-density` as keyof typeof errors] ? 'input-error' : ''}`}

@@ -1,4 +1,5 @@
 import { type ChangeEvent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { 
   Header, 
   FilamentCard, 
@@ -26,6 +27,7 @@ import {
 import { AppState, Filament, Toast } from "./types";
 
 export default function App() {
+  const { t } = useTranslation();
   const [s, set] = usePersistentState<AppState>("print-cost-calc:v1", defaultState);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [shareModalOpen, setShareModalOpen] = useState(false);
@@ -40,10 +42,10 @@ export default function App() {
       try {
         set(urlData);
         clearUrlData();
-        pushToast('success', 'Calculation loaded successfully', 4000);
+        pushToast('success', t('messages.calculationLoaded'), 4000);
       } catch (error) {
         clearUrlData();
-        pushToast('error', 'Error loading calculation from URL', 5000);
+        pushToast('error', t('messages.errorLoadingCalculation'), 5000);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,9 +103,9 @@ export default function App() {
         document.execCommand('copy'); 
         document.body.removeChild(ta);
       }
-      pushToast('success', 'Breakdown copied');
+      pushToast('success', t('messages.breakdownCopied'));
     } catch (e) {
-      pushToast('error', 'Copy failed');
+      pushToast('error', t('messages.copyFailed'));
     }
   }
 
@@ -118,7 +120,7 @@ export default function App() {
     const next = v ? 'business' : 'hobby';
     if (prev === next) return;
     setMany({ mode: next });
-    pushToast('info', `Mode: ${next}`, 5000, 'Undo', () => setMany({ mode: prev }));
+    pushToast('info', t('messages.modeChanged', { mode: t(`app.modes.${next}`) }), 5000, t('messages.undo'), () => setMany({ mode: prev }));
   }
 
   // Margin change with Undo
@@ -127,7 +129,7 @@ export default function App() {
     const next = parseInput(value);
     setMany({ marginPercent: next });
     if (next !== "" && next !== prev) {
-      pushToast('info', `Margin: ${number(next, 0)}%`, 5000, 'Undo', () => setMany({ marginPercent: prev }));
+      pushToast('info', t('messages.marginChanged', { margin: number(next, 0) }), 5000, t('messages.undo'), () => setMany({ marginPercent: prev }));
     }
   }
 
@@ -162,7 +164,7 @@ export default function App() {
 
   function removeFilament(id: string): void {
     if (s.filaments.length <= 1) {
-      pushToast('error', 'Cannot remove the last filament');
+      pushToast('error', t('messages.cannotRemoveLastFilament'));
       return;
     }
     const filamentToRemove = s.filaments.find(f => f.id === id);
@@ -212,7 +214,7 @@ export default function App() {
     resetDefaults();
     const dlg = document.getElementById('resetModal') as HTMLDialogElement | null;
     if (dlg && typeof dlg.close === 'function') dlg.close();
-    pushToast('success', 'Settings reset');
+    pushToast('success', t('messages.settingsReset'));
   }
 
   function setTimeHours(v: string): void {
@@ -244,7 +246,7 @@ export default function App() {
 
     if (preset.key === "custom" || preset.watts == null) {
       setMany({ powerProfile: "custom" });
-      pushToast('info', 'Custom power profile');
+      pushToast('info', t('messages.customPowerProfile'));
       return;
     }
 
@@ -303,7 +305,7 @@ export default function App() {
   function onThemeSwapChange(e: ChangeEvent<HTMLInputElement>): void {
     const newTheme = e.target.checked;
     setIsDarkTheme(newTheme);
-    pushToast('info', `Theme: ${newTheme ? 'Dark' : 'Light'}`, 2000);
+    pushToast('info', t('messages.themeChanged', { theme: t(`messages.${newTheme ? 'dark' : 'light'}`) }), 2000);
   }
 
   const fmt = (v: number): string => {
@@ -356,13 +358,13 @@ export default function App() {
           <div className="lg:col-span-2 space-y-6">
             {/* Filaments */}
             <Section
-              title="Filaments"
+              title={t('sections.filaments')}
               aside={
                   <Switch
                     checked={s.filamentPricingMode === "length"}
                     onChange={(v) => setMany({ filamentPricingMode: v ? "length" : "grams" })}
-                    labelLeft="By grams"
-                    labelRight="By length"
+                    labelLeft={t('toggles.byGrams')}
+                    labelRight={t('toggles.byLength')}
                   />
               }
             >
@@ -388,13 +390,13 @@ export default function App() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                       <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                     </svg>
-                    Add Filament
+                      {t('buttons.addFilament')}
                   </button>
                 </div>
               </div>
               
               <Row>
-                <Field label="Support & waste" suffix="%" error={errors.supportWastePercent} tip="Extra material for supports, brim, purge, etc.">
+                <Field label={t('fields.supportWaste')} suffix="%" error={errors.supportWastePercent} tip={t('tooltips.supportWaste')}>
                   <input
                     className={`${INPUT_CLASS} ${errors.supportWastePercent ? 'input-error' : ''}`}
                     type="text"
@@ -404,7 +406,7 @@ export default function App() {
                     onChange={(e) => setMany({ supportWastePercent: parseInput(e.target.value) })}
                   />
                 </Field>
-                <Field label="Failure rate" suffix="%" hint="Amortized reprints" error={errors.failureRatePercent} tip="Share of failed prints over time (0–100%)">
+                <Field label={t('fields.failureRate')} suffix="%" hint={t('hints.amortizedReprints')} error={errors.failureRatePercent} tip={t('tooltips.failureRate')}>
                   <input
                     className={`${INPUT_CLASS} ${errors.failureRatePercent ? 'input-error' : ''}`}
                     type="text"
@@ -418,9 +420,9 @@ export default function App() {
             </Section>
 
             {/* Energy */}
-            <Section title="Energy">
+            <Section title={t('sections.energy')}>
               <Row>
-                <Field label="Material">
+                <Field label={t('fields.material')}>
                   <select
                     className="select select-bordered"
                     value={s.material}
@@ -432,7 +434,7 @@ export default function App() {
                   </select>
                   <div className="mt-1 text-xs text-gray-500">Changing material adjusts average power based on official data when available or by a material multiplier.</div>
                 </Field>
-                <Field label="Average power" suffix="W" error={errors.avgPowerW} tip="Mean wattage during steady-state printing (measure with smart plug)">
+                <Field label={t('fields.averagePower')} suffix="W" error={errors.avgPowerW} tip={t('tooltips.averagePower')}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <select
                       className="select select-bordered"
@@ -455,7 +457,7 @@ export default function App() {
                   </div>
                   <div className="mt-1 text-xs text-gray-500">Preset values are typical PLA @ ~60°C bed; actual usage varies with temps, enclosure, room conditions.</div>
                 </Field>
-                <Field label="Print time" error={errors.printTimeHours || errors.printTimeMinutes} tip="Total nozzle-on time; minutes normalize to 0–59">
+                <Field label={t('fields.printTime')} error={errors.printTimeHours || errors.printTimeMinutes} tip={t('tooltips.printTime')}>
                   <div className="flex items-center gap-2">
                     <input
                       className={`${INPUT_CLASS} ${errors.printTimeHours ? 'input-error' : ''}`}
@@ -479,7 +481,7 @@ export default function App() {
                 </Field>
               </Row>
               <Row>
-                <Field label="Energy price" suffix={`${s.currency}/kWh`} error={errors.energyPricePerKWh} tip="Your electricity unit price">
+                <Field label={t('fields.energyPrice')} suffix={`${s.currency}${t('units.perKWh')}`} error={errors.energyPricePerKWh} tip={t('tooltips.energyPrice')}>
                   <input
                     className={`${INPUT_CLASS} ${errors.energyPricePerKWh ? 'input-error' : ''}`}
                     type="text"
@@ -494,9 +496,9 @@ export default function App() {
 
             {/* Business-only */}
             {s.mode === "business" && (
-              <Section title="Business factors">
+              <Section title={t('sections.businessFactors')}>
                 <Row>
-                  <Field label="Printer price" error={errors.printerPrice} tip="Purchase price used for straight-line depreciation">
+                  <Field label={t('fields.printerPrice')} error={errors.printerPrice} tip={t('tooltips.printerPrice')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.printerPrice ? 'input-error' : ''}`}
                       type="text"
@@ -506,7 +508,7 @@ export default function App() {
                       onChange={(e) => setMany({ printerPrice: parseInput(e.target.value) })}
                     />
                   </Field>
-                  <Field label="Lifetime" suffix="hours" error={errors.printerLifetimeHours} tip="Expected productive hours until replacement">
+                  <Field label={t('fields.lifetime')} suffix={t('units.hours')} error={errors.printerLifetimeHours} tip={t('tooltips.lifetime')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.printerLifetimeHours ? 'input-error' : ''}`}
                       type="text"
@@ -518,7 +520,7 @@ export default function App() {
                   </Field>
                 </Row>
                 <Row>
-                  <Field label="Maintenance" suffix={`${s.currency}/h`} error={errors.maintenanceEurPerHour} tip="Consumables & wear per printing hour">
+                  <Field label={t('fields.maintenance')} suffix={`${s.currency}${t('units.perH')}`} error={errors.maintenanceEurPerHour} tip={t('tooltips.maintenance')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.maintenanceEurPerHour ? 'input-error' : ''}`}
                       type="text"
@@ -531,7 +533,7 @@ export default function App() {
                 </Row>
                   <div className="divider divider-primary"/>
                 <Row>
-                    <Field label="Labor rate" suffix={`${s.currency}/h`} error={errors.laborRatePerHour} tip="Your hourly rate for handling & post">
+                    <Field label={t('fields.laborRate')} suffix={`${s.currency}${t('units.perH')}`} error={errors.laborRatePerHour} tip={t('tooltips.laborRate')}>
                         <input
                             className={`${INPUT_CLASS} ${errors.laborRatePerHour ? 'input-error' : ''}`}
                             type="text"
@@ -541,7 +543,7 @@ export default function App() {
                             onChange={(e) => setMany({ laborRatePerHour: parseInput(e.target.value) })}
                         />
                     </Field>
-                  <Field label="Labor time" suffix="min" error={errors.laborMinutes} tip="Hands-on time (setup, cleanup)">
+                  <Field label={t('fields.laborTime')} suffix={t('units.minutes')} error={errors.laborMinutes} tip={t('tooltips.laborTime')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.laborMinutes ? 'input-error' : ''}`}
                       type="text"
@@ -554,7 +556,7 @@ export default function App() {
                 </Row>
                   <div className="divider divider-primary"/>
                 <Row>
-                  <Field label="Preparation time" suffix="min" error={errors.preparationMinutes} tip="Time for pre-processing tasks">
+                  <Field label={t('fields.preparationTime')} suffix={t('units.minutes')} error={errors.preparationMinutes} tip={t('tooltips.preparationTime')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.preparationMinutes ? 'input-error' : ''}`}
                       type="text"
@@ -564,7 +566,7 @@ export default function App() {
                       onChange={(e) => setMany({ preparationMinutes: parseInput(e.target.value) })}
                     />
                   </Field>
-                  <Field label="Preparation rate" suffix={`${s.currency}/h`} error={errors.preparationHourlyRate} tip="Hourly rate for pre-processing tasks">
+                  <Field label={t('fields.preparationRate')} suffix={`${s.currency}${t('units.perH')}`} error={errors.preparationHourlyRate} tip={t('tooltips.preparationRate')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.preparationHourlyRate ? 'input-error' : ''}`}
                       type="text"
@@ -576,7 +578,7 @@ export default function App() {
                   </Field>
                 </Row>
                 <Row>
-                  <Field label="Post-processing time" suffix="min" error={errors.postProcessingMinutes} tip="Time for sanding, painting, etc.">
+                  <Field label={t('fields.postProcessingTime')} suffix={t('units.minutes')} error={errors.postProcessingMinutes} tip={t('tooltips.postProcessingTime')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.postProcessingMinutes ? 'input-error' : ''}`}
                       type="text"
@@ -586,7 +588,7 @@ export default function App() {
                       onChange={(e) => setMany({ postProcessingMinutes: parseInput(e.target.value) })}
                     />
                   </Field>
-                  <Field label="Post-processing rate" suffix={`${s.currency}/h`} error={errors.postProcessingHourlyRate} tip="Hourly rate for sanding, painting, etc.">
+                  <Field label={t('fields.postProcessingRate')} suffix={`${s.currency}${t('units.perH')}`} error={errors.postProcessingHourlyRate} tip={t('tooltips.postProcessingRate')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.postProcessingHourlyRate ? 'input-error' : ''}`}
                       type="text"
@@ -599,7 +601,7 @@ export default function App() {
                 </Row>
                   <div className="divider divider-primary"/>
                 <Row>
-                  <Field label="Shipping cost" suffix={s.currency} error={errors.shippingCost} tip="Fixed shipping cost per order">
+                  <Field label={t('fields.shippingCost')} suffix={s.currency} error={errors.shippingCost} tip={t('tooltips.shippingCost')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.shippingCost ? 'input-error' : ''}`}
                       type="text"
@@ -609,7 +611,7 @@ export default function App() {
                       onChange={(e) => setMany({ shippingCost: parseInput(e.target.value) })}
                     />
                   </Field>
-                  <Field label="Packaging cost" suffix={s.currency} error={errors.packagingCost} tip="Fixed packaging cost per order">
+                  <Field label={t('fields.packagingCost')} suffix={s.currency} error={errors.packagingCost} tip={t('tooltips.packagingCost')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.packagingCost ? 'input-error' : ''}`}
                       type="text"
@@ -621,7 +623,7 @@ export default function App() {
                   </Field>
                 </Row>
                 <Row>
-                  <Field label="VAT / Tax" suffix="%" error={errors.vatPercent} tip="VAT percentage applied to net total">
+                  <Field label={t('fields.vatTax')} suffix="%" error={errors.vatPercent} tip={t('tooltips.vatTax')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.vatPercent ? 'input-error' : ''}`}
                       type="text"
@@ -631,7 +633,7 @@ export default function App() {
                       onChange={(e) => setMany({ vatPercent: parseInput(e.target.value) })}
                     />
                   </Field>
-                  <Field label="Margin" suffix="%" hint="Optional markup for quotes" error={errors.marginPercent} tip="Add-on percentage applied on subtotal">
+                  <Field label={t('fields.margin')} suffix="%" hint={t('hints.optionalMarkup')} error={errors.marginPercent} tip={t('tooltips.margin')}>
                     <input
                       className={`${INPUT_CLASS} ${errors.marginPercent ? 'input-error' : ''}`}
                       type="text"
@@ -645,7 +647,7 @@ export default function App() {
               </Section>
             )}
 
-            <Section title="Notes">
+            <Section title={t('sections.notes')}>
               <Info>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Average power: measure with a smart plug for best accuracy.</li>
