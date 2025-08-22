@@ -1,7 +1,10 @@
 import { useState, useRef } from 'react';
 import QRCode from 'react-qrcode-logo';
+import { pdf } from '@react-pdf/renderer';
 import { AppState } from '../types';
 import { generateShareUrl } from '../utils';
+import { PDFDocument } from './PDFDocument';
+import { useCalculations } from '../hooks';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -12,8 +15,10 @@ interface ShareModalProps {
 }
 
 export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: ShareModalProps) {
-  const [shareOption, setShareOption] = useState<'qr' | null>(null);
+  const [shareOption, setShareOption] = useState<'qr' | 'pdf' | null>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
+  const calculations = useCalculations(appState);
 
   // Generate shareable URL for QR code
   const getShareData = (): string => {
@@ -25,6 +30,78 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
     }
   };
 
+  // Generate QR code as data URL for PDF
+  const generateQRCodeDataUrl = async (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      console.log('🔄 Starting QR code generation for PDF');
+      
+      const waitForQRCode = () => {
+        const elapsed = Date.now() - startTime;
+        console.log(`⏱️ Waiting for QR code... (${elapsed}ms elapsed)`);
+        
+        if (!qrRef.current) {
+          console.log('❌ qrRef.current is null');
+          if (elapsed < 3000) {
+            setTimeout(waitForQRCode, 100);
+            return;
+          }
+          reject(new Error('QR code container not found after 3 seconds'));
+          return;
+        }
+
+        console.log('✅ qrRef.current found, looking for Canvas...');
+        const canvas = qrRef.current.querySelector('canvas');
+        
+        if (!canvas) {
+          console.log('❌ Canvas not found in QR code container');
+          console.log('Container innerHTML:', qrRef.current.innerHTML);
+          console.log('Container children:', qrRef.current.children);
+          
+          if (elapsed < 3000) {
+            setTimeout(waitForQRCode, 100);
+            return;
+          }
+          reject(new Error('QR code Canvas not found after 3 seconds'));
+          return;
+        }
+
+        console.log('✅ Canvas found, dimensions:', canvas.width, 'x', canvas.height);
+        
+        // Check if canvas has been drawn to
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Canvas context not available'));
+          return;
+        }
+        
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const hasContent = imageData.data.some(pixel => pixel !== 0);
+        console.log('📊 Canvas has content:', hasContent);
+        
+        if (!hasContent && elapsed < 3000) {
+          console.log('⚠️ Canvas found but appears empty, waiting longer...');
+          setTimeout(waitForQRCode, 100);
+          return;
+        }
+
+        // Found Canvas with content, convert to data URL
+        try {
+          console.log('🎨 Converting Canvas to data URL...');
+          const dataUrl = canvas.toDataURL('image/png');
+          console.log('✅ QR code converted to data URL, length:', dataUrl.length);
+          resolve(dataUrl);
+        } catch (error) {
+          console.log('❌ Error processing QR code:', error);
+          reject(new Error('Error processing QR code: ' + (error instanceof Error ? error.message : 'Unknown error')));
+        }
+      };
+
+      const startTime = Date.now();
+      // Add a small initial delay to ensure React has rendered
+      setTimeout(waitForQRCode, 100);
+    });
+  };
+
   // Download QR code as PNG
   const downloadQRCode = async (): Promise<void> => {
     try {
@@ -33,58 +110,68 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
         return;
       }
 
-      const svg = qrRef.current.querySelector('svg');
-      if (!svg) {
-        onError('QR code SVG not found');
+      const canvas = qrRef.current.querySelector('canvas');
+      if (!canvas) {
+        onError('QR code Canvas not found');
         return;
       }
 
-      // Create canvas and convert SVG to PNG
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        onError('Canvas context not available');
-        return;
-      }
+      // Canvas is already rendered, convert directly to blob
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          onError('Error creating PNG file');
+          return;
+        }
 
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-      const svgUrl = URL.createObjectURL(svgBlob);
-
-      const img = new Image();
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-        
-        canvas.toBlob((blob) => {
-          if (!blob) {
-            onError('Error creating PNG file');
-            return;
-          }
-
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `3d-print-calculator-${new Date().toISOString().slice(0, 10)}.png`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-          onSuccess('QR code downloaded');
-        }, 'image/png');
-        
-        URL.revokeObjectURL(svgUrl);
-      };
-      img.onerror = () => {
-        onError('Error loading QR code');
-        URL.revokeObjectURL(svgUrl);
-      };
-      img.src = svgUrl;
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `3d-print-calculator-qr-${new Date().toISOString().slice(0, 10)}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        onSuccess('QR code downloaded');
+      }, 'image/png');
     } catch (e) {
       onError('Error downloading QR code');
+    }
+  };
+
+  // Generate and download PDF
+  const downloadPDF = async (): Promise<void> => {
+    try {
+      setIsGeneratingPDF(true);
+      
+      // Generate QR code data URL
+      const qrCodeDataUrl = await generateQRCodeDataUrl();
+      
+      // Create PDF document
+      const doc = <PDFDocument 
+        appState={appState} 
+        calculations={calculations} 
+        qrCodeDataUrl={qrCodeDataUrl}
+      />;
+      
+      // Generate PDF blob
+      const blob = await pdf(doc).toBlob();
+      
+      // Download PDF
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `3d-print-calculation-${new Date().toISOString().slice(0, 10)}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      onSuccess('PDF downloaded successfully');
+      setShareOption(null);
+    } catch (e) {
+      onError(e instanceof Error ? e.message : 'Error generating PDF');
+    } finally {
+      setIsGeneratingPDF(false);
     }
   };
 
@@ -122,18 +209,17 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
                 Create Link with Calculation
               </button>
               <button
-                className="btn btn-outline w-full justify-start opacity-50"
-                disabled
-                title="Will be available in a future update"
+                className="btn btn-outline w-full justify-start"
+                onClick={() => setShareOption('pdf')}
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Export PDF (coming soon)
+                Export PDF
               </button>
             </div>
           </div>
-        ) : (
+        ) : shareOption === 'qr' ? (
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
               <button
@@ -162,6 +248,7 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
                   logoPadding={4}
                   logoPaddingStyle={"circle"}
                   removeQrCodeBehindLogo={true}
+                  enableCORS={true}
                 />
               </div>
               
@@ -182,7 +269,87 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
               </div>
             </div>
           </div>
-        )}
+        ) : shareOption === 'pdf' ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              <button
+                className="btn btn-sm btn-ghost"
+                onClick={() => setShareOption(null)}
+                aria-label="Back"
+              >
+                ←
+              </button>
+              <span className="font-semibold">Export PDF</span>
+            </div>
+
+            <div className="text-center space-y-4">
+              <div className="p-8 border-2 border-dashed border-base-300 rounded-lg">
+                <svg className="w-16 h-16 mx-auto mb-4 text-base-content opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h4 className="text-lg font-semibold mb-2">PDF Export</h4>
+                <p className="text-sm opacity-75 mb-4">
+                  Generate a comprehensive PDF report including all calculation details, cost breakdown, and a QR code to share your calculation.
+                </p>
+                <p className="text-xs opacity-60">
+                  The PDF will include:
+                </p>
+                <ul className="text-xs opacity-60 list-disc list-inside mt-2 space-y-1">
+                  <li>Complete cost breakdown</li>
+                  <li>Print and filament details</li>
+                  <li>QR code for easy sharing</li>
+                  <li>Professional Nord theme styling</li>
+                </ul>
+              </div>
+
+              <button
+                className={`btn btn-primary w-full ${isGeneratingPDF ? 'loading' : ''}`}
+                onClick={downloadPDF}
+                disabled={isGeneratingPDF}
+              >
+                {isGeneratingPDF ? (
+                  <>
+                    <span className="loading loading-spinner loading-sm mr-2"></span>
+                    Generating PDF...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download PDF Report
+                  </>
+                )}
+              </button>
+
+              {/* Hidden QR code for PDF generation - positioned off-screen but still rendered */}
+              <div 
+                ref={qrRef}
+                style={{
+                  position: 'absolute',
+                  left: '-9999px',
+                  top: '-9999px',
+                  visibility: 'hidden'
+                }}
+                className="bg-white p-2"
+              >
+                <QRCode
+                  size={256}
+                  value={shareData}
+                  ecLevel="M"
+                  qrStyle={"squares"}
+                  logoImage="/logo.svg"
+                  logoOpacity={0.8}
+                  logoPaddingRadius={80}
+                  logoPadding={4}
+                  logoPaddingStyle={"circle"}
+                  removeQrCodeBehindLogo={true}
+                  enableCORS={true}
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <div className="modal-action">
           <button className="btn" onClick={onClose}>

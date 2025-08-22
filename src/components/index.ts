@@ -5,4 +5,5 @@ export { CostBreakdown } from './CostBreakdown';
 export { ProfitCalculator } from './ProfitCalculator';
 export { CostChart } from './CostChart';
 export { ShareModal } from './ShareModal';
+export { PDFDocument } from './PDFDocument';
 export * from './ui';
