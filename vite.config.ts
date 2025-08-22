@@ -41,5 +41,24 @@ export default defineConfig(({ mode }) => {
         }
       })
     ],
+      build: {
+          // Increase warning limit since PDF bundle is intentionally large but lazy-loaded
+          chunkSizeWarningLimit: 2000,
+          rollupOptions: {
+              output: {
+                  manualChunks: {
+                      pdf: [
+                          '@react-pdf/renderer',
+                          '@react-pdf/layout',
+                          '@react-pdf/image',
+                          '@react-pdf/textkit',
+                          '@react-pdf/font',
+                          '@react-pdf/pdfkit',
+                          'yoga-layout',
+                      ],
+                  },
+              },
+          },
+      },
   };
 });

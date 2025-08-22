@@ -10,22 +10,34 @@ import {
 } from '@react-pdf/renderer';
 import { AppState } from '../types';
 import { formatToCurrency, prettyDuration, number } from '../utils';
-import roboto from "../assets/fonts/RobotoMono-Regular.ttf";
-import robotoBold from "../assets/fonts/RobotoMono-Bold.ttf";
 
-Font.register({
+// Fonts werden dynamisch geladen
+let fontsRegistered = false;
+
+const registerFonts = async () => {
+  if (fontsRegistered) return;
+  
+  const [roboto, robotoBold] = await Promise.all([
+    import("../assets/fonts/RobotoMono-Bold.ttf"),
+    import("../assets/fonts/RobotoMono-Regular.ttf"),
+  ]);
+
+  Font.register({
     family: 'Roboto Mono',
     fonts: [
-        {
-            src: roboto,
-            fontWeight: 'normal',
-        },
-        {
-            src: robotoBold,
-            fontWeight: 'bold',
-        }
+      {
+        src: roboto.default,
+        fontWeight: 'normal',
+      },
+      {
+        src: robotoBold.default,
+        fontWeight: 'bold',
+      }
     ],
-});
+  });
+  
+  fontsRegistered = true;
+};
 
 // Nord theme colors for PDF
 const nordColors = {
@@ -220,17 +232,20 @@ interface CalculationData {
   getFilamentGrams: (filament: any) => number;
 }
 
-interface PDFDocumentProps {
+export interface PDFDocumentProps {
   appState: AppState;
   calculations: CalculationData;
   qrCodeDataUrl: string;
 }
 
-export const PDFDocument: React.FC<PDFDocumentProps> = ({ 
+export { registerFonts as ensureFontsRegistered };
+
+export const PDFDocument: React.FC<PDFDocumentProps> = ({
   appState, 
   calculations, 
   qrCodeDataUrl 
 }) => {
+
   const formatCurrency = (value: number) => formatToCurrency({ 
     num: value, 
     currency: appState.currency,
@@ -397,3 +412,5 @@ export const PDFDocument: React.FC<PDFDocumentProps> = ({
     </Document>
   );
 };
+
+export default PDFDocument;

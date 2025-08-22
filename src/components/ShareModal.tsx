@@ -1,9 +1,7 @@
 import { useState, useRef } from 'react';
 import QRCode from 'react-qrcode-logo';
-import { pdf } from '@react-pdf/renderer';
 import { AppState } from '../types';
 import { generateShareUrl } from '../utils';
-import { PDFDocument } from './PDFDocument';
 import { useCalculations } from '../hooks';
 
 interface ShareModalProps {
@@ -139,14 +137,25 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
   };
 
   // Generate and download PDF
-  const downloadPDF = async (): Promise<void> => {
+  async function downloadPDF(): Promise<void> {
     try {
       setIsGeneratingPDF(true);
       
       // Generate QR code data URL
       const qrCodeDataUrl = await generateQRCodeDataUrl();
       
-      // Create PDF document
+      // Dynamically import PDF dependencies
+      const [
+        { default: PDFDocument, ensureFontsRegistered }, 
+        { pdf }
+      ] = await Promise.all([
+        import('./PDFDocument'),
+        import('@react-pdf/renderer')
+      ]);
+      
+      // Ensure fonts are registered before creating PDF
+      await ensureFontsRegistered();
+      
       const doc = <PDFDocument 
         appState={appState} 
         calculations={calculations} 
@@ -173,7 +182,7 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
     } finally {
       setIsGeneratingPDF(false);
     }
-  };
+  }
 
   if (!isOpen) return null;
 
