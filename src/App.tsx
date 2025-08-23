@@ -359,6 +359,33 @@ export default function App() {
           </form>
         </dialog>
 
+        {/* Mobile Cost Summary - Show at top on mobile */}
+        <div className="lg:hidden mb-6">
+          <CostBreakdown
+            mode={s.mode}
+            currency={s.currency}
+            printTimeHours={s.printTimeHours}
+            printTimeMinutes={s.printTimeMinutes}
+            materialCost={calculations.materialCost}
+            energyCost={calculations.energyCost}
+            maintenanceCost={calculations.maintenanceCost}
+            depreciationCost={calculations.depreciationCost}
+            laborCost={calculations.laborCost}
+            preparationCost={calculations.preparationCost}
+            postProcessingCost={calculations.postProcessingCost}
+            shippingCost={calculations.shippingCost}
+            packagingCost={calculations.packagingCost}
+            marginPercent={s.marginPercent}
+            margin={calculations.margin}
+            netTotal={calculations.netTotal}
+            vatPercent={calculations.vatPercent}
+            vatAmount={calculations.vatAmount}
+            total={calculations.total}
+            onCopyBreakdown={copyBreakdown}
+            onShare={handleShare}
+          />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             {/* Filaments */}
@@ -665,8 +692,8 @@ export default function App() {
             </Section>
           </div>
 
-          {/* Summary */}
-          <div className="space-y-6">
+          {/* Summary - Desktop only */}
+          <div className="max-lg:hidden space-y-6">
             <CostBreakdown
               mode={s.mode}
               currency={s.currency}

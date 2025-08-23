@@ -133,7 +133,7 @@ export function CostBreakdown({
       <hr className="my-4" />
       <div className="flex items-center justify-between">
         <div className="font-semibold">{t('costBreakdown.total')}</div>
-        <div className="text-2xl text-primary font-bold">{fmt(total)}</div>
+        <div className="text-3xl text-primary font-bold tabular-nums">{fmt(total)}</div>
       </div>
     </div>
   );
