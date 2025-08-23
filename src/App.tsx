@@ -526,156 +526,190 @@ export default function App() {
               </Row>
             </Section>
 
-            {/* Business-only */}
+            {/* Business-only - Progressive Form Disclosure */}
             {s.mode === "business" && (
               <Section title={t('sections.businessFactors')}>
-                <Row>
-                  <Field label={t('fields.printerPrice')} error={errors.printerPrice} tip={t('tooltips.printerPrice')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.printerPrice ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={s.printerPrice}
-                      onChange={(e) => setMany({ printerPrice: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                  <Field label={t('fields.lifetime')} suffix={t('units.hours')} error={errors.printerLifetimeHours} tip={t('tooltips.lifetime')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.printerLifetimeHours ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="1"
-                      value={s.printerLifetimeHours}
-                      onChange={(e) => setMany({ printerLifetimeHours: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                </Row>
-                <Row>
-                  <Field label={t('fields.maintenance')} suffix={`${s.currency}${t('units.perH')}`} error={errors.maintenanceEurPerHour} tip={t('tooltips.maintenance')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.maintenanceEurPerHour ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={s.maintenanceEurPerHour}
-                      onChange={(e) => setMany({ maintenanceEurPerHour: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                </Row>
-                  <div className="divider divider-primary"/>
-                <Row>
-                    <Field label={t('fields.laborRate')} suffix={`${s.currency}${t('units.perH')}`} error={errors.laborRatePerHour} tip={t('tooltips.laborRate')}>
-                        <input
-                            className={`${INPUT_CLASS} ${errors.laborRatePerHour ? 'input-error' : ''}`}
-                            type="text"
-                            inputMode="decimal"
-                            placeholder="0"
-                            value={s.laborRatePerHour}
-                            onChange={(e) => setMany({ laborRatePerHour: parseInput(e.target.value) })}
-                        />
-                    </Field>
-                  <Field label={t('fields.laborTime')} suffix={t('units.minutes')} error={errors.laborMinutes} tip={t('tooltips.laborTime')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.laborMinutes ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="0"
-                      value={s.laborMinutes}
-                      onChange={(e) => setMany({ laborMinutes: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                </Row>
-                  <div className="divider divider-primary"/>
-                <Row>
-                  <Field label={t('fields.preparationTime')} suffix={t('units.minutes')} error={errors.preparationMinutes} tip={t('tooltips.preparationTime')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.preparationMinutes ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="0"
-                      value={s.preparationMinutes}
-                      onChange={(e) => setMany({ preparationMinutes: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                  <Field label={t('fields.preparationRate')} suffix={`${s.currency}${t('units.perH')}`} error={errors.preparationHourlyRate} tip={t('tooltips.preparationRate')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.preparationHourlyRate ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={s.preparationHourlyRate}
-                      onChange={(e) => setMany({ preparationHourlyRate: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                </Row>
-                <Row>
-                  <Field label={t('fields.postProcessingTime')} suffix={t('units.minutes')} error={errors.postProcessingMinutes} tip={t('tooltips.postProcessingTime')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.postProcessingMinutes ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="0"
-                      value={s.postProcessingMinutes}
-                      onChange={(e) => setMany({ postProcessingMinutes: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                  <Field label={t('fields.postProcessingRate')} suffix={`${s.currency}${t('units.perH')}`} error={errors.postProcessingHourlyRate} tip={t('tooltips.postProcessingRate')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.postProcessingHourlyRate ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={s.postProcessingHourlyRate}
-                      onChange={(e) => setMany({ postProcessingHourlyRate: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                </Row>
-                  <div className="divider divider-primary"/>
-                <Row>
-                  <Field label={t('fields.shippingCost')} suffix={s.currency} error={errors.shippingCost} tip={t('tooltips.shippingCost')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.shippingCost ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={s.shippingCost}
-                      onChange={(e) => setMany({ shippingCost: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                  <Field label={t('fields.packagingCost')} suffix={s.currency} error={errors.packagingCost} tip={t('tooltips.packagingCost')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.packagingCost ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={s.packagingCost}
-                      onChange={(e) => setMany({ packagingCost: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                </Row>
-                <Row>
-                  <Field label={t('fields.vatTax')} suffix="%" error={errors.vatPercent} tip={t('tooltips.vatTax')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.vatPercent ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={s.vatPercent}
-                      onChange={(e) => setMany({ vatPercent: parseInput(e.target.value) })}
-                    />
-                  </Field>
-                  <Field label={t('fields.margin')} suffix="%" hint={t('hints.optionalMarkup')} error={errors.marginPercent} tip={t('tooltips.margin')}>
-                    <input
-                      className={`${INPUT_CLASS} ${errors.marginPercent ? 'input-error' : ''}`}
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={s.marginPercent}
-                      onChange={(e) => onChangeMargin(e.target.value)}
-                    />
-                  </Field>
-                </Row>
+                <div className="space-y-4">
+                  {/* Core Costs - Default Open */}
+                  <div className="collapse collapse-arrow bg-base-100 border border-base-300">
+                    <input type="checkbox" defaultChecked />
+                    <div className="collapse-title text-lg font-semibold text-primary">
+                      {t('business.coreCosting', 'Core Costing')}
+                    </div>
+                    <div className="collapse-content">
+                      <div className="space-y-4 pt-2">
+                        <Row>
+                          <Field label={t('fields.printerPrice')} error={errors.printerPrice} tip={t('tooltips.printerPrice')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.printerPrice ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0"
+                              value={s.printerPrice}
+                              onChange={(e) => setMany({ printerPrice: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                          <Field label={t('fields.lifetime')} suffix={t('units.hours')} error={errors.printerLifetimeHours} tip={t('tooltips.lifetime')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.printerLifetimeHours ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="1"
+                              value={s.printerLifetimeHours}
+                              onChange={(e) => setMany({ printerLifetimeHours: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                        </Row>
+                        <Row>
+                          <Field label={t('fields.maintenance')} suffix={`${s.currency}${t('units.perH')}`} error={errors.maintenanceEurPerHour} tip={t('tooltips.maintenance')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.maintenanceEurPerHour ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0"
+                              value={s.maintenanceEurPerHour}
+                              onChange={(e) => setMany({ maintenanceEurPerHour: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                        </Row>
+                        <Row>
+                          <Field label={t('fields.vatTax')} suffix="%" error={errors.vatPercent} tip={t('tooltips.vatTax')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.vatPercent ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0"
+                              value={s.vatPercent}
+                              onChange={(e) => setMany({ vatPercent: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                          <Field label={t('fields.margin')} suffix="%" hint={t('hints.optionalMarkup')} error={errors.marginPercent} tip={t('tooltips.margin')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.marginPercent ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0"
+                              value={s.marginPercent}
+                              onChange={(e) => onChangeMargin(e.target.value)}
+                            />
+                          </Field>
+                        </Row>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Labor & Processing - Collapsible */}
+                  <div className="collapse collapse-arrow bg-base-100 border border-base-300">
+                    <input type="checkbox" />
+                    <div className="collapse-title text-lg font-semibold text-secondary">
+                      {t('business.laborProcessing', 'Labor & Processing')}
+                    </div>
+                    <div className="collapse-content">
+                      <div className="space-y-4 pt-2">
+                        <Row>
+                          <Field label={t('fields.laborRate')} suffix={`${s.currency}${t('units.perH')}`} error={errors.laborRatePerHour} tip={t('tooltips.laborRate')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.laborRatePerHour ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0"
+                              value={s.laborRatePerHour}
+                              onChange={(e) => setMany({ laborRatePerHour: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                          <Field label={t('fields.laborTime')} suffix={t('units.minutes')} error={errors.laborMinutes} tip={t('tooltips.laborTime')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.laborMinutes ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="numeric"
+                              placeholder="0"
+                              value={s.laborMinutes}
+                              onChange={(e) => setMany({ laborMinutes: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                        </Row>
+                        <Row>
+                          <Field label={t('fields.preparationTime')} suffix={t('units.minutes')} error={errors.preparationMinutes} tip={t('tooltips.preparationTime')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.preparationMinutes ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="numeric"
+                              placeholder="0"
+                              value={s.preparationMinutes}
+                              onChange={(e) => setMany({ preparationMinutes: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                          <Field label={t('fields.preparationRate')} suffix={`${s.currency}${t('units.perH')}`} error={errors.preparationHourlyRate} tip={t('tooltips.preparationRate')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.preparationHourlyRate ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0"
+                              value={s.preparationHourlyRate}
+                              onChange={(e) => setMany({ preparationHourlyRate: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                        </Row>
+                        <Row>
+                          <Field label={t('fields.postProcessingTime')} suffix={t('units.minutes')} error={errors.postProcessingMinutes} tip={t('tooltips.postProcessingTime')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.postProcessingMinutes ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="numeric"
+                              placeholder="0"
+                              value={s.postProcessingMinutes}
+                              onChange={(e) => setMany({ postProcessingMinutes: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                          <Field label={t('fields.postProcessingRate')} suffix={`${s.currency}${t('units.perH')}`} error={errors.postProcessingHourlyRate} tip={t('tooltips.postProcessingRate')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.postProcessingHourlyRate ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0"
+                              value={s.postProcessingHourlyRate}
+                              onChange={(e) => setMany({ postProcessingHourlyRate: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                        </Row>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Additional Costs - Collapsible */}
+                  <div className="collapse collapse-arrow bg-base-100 border border-base-300">
+                    <input type="checkbox" />
+                    <div className="collapse-title text-lg font-semibold text-accent">
+                      {t('business.additionalCosts', 'Additional Costs')}
+                    </div>
+                    <div className="collapse-content">
+                      <div className="space-y-4 pt-2">
+                        <Row>
+                          <Field label={t('fields.shippingCost')} suffix={s.currency} error={errors.shippingCost} tip={t('tooltips.shippingCost')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.shippingCost ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0"
+                              value={s.shippingCost}
+                              onChange={(e) => setMany({ shippingCost: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                          <Field label={t('fields.packagingCost')} suffix={s.currency} error={errors.packagingCost} tip={t('tooltips.packagingCost')}>
+                            <input
+                              className={`${INPUT_CLASS} ${errors.packagingCost ? 'input-error' : ''}`}
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="0"
+                              value={s.packagingCost}
+                              onChange={(e) => setMany({ packagingCost: parseInput(e.target.value) })}
+                            />
+                          </Field>
+                        </Row>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </Section>
             )}
 

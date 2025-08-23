@@ -151,6 +151,11 @@
   "chart": {
     "mode": "{{mode}}-Modus"
   },
+  "business": {
+    "coreCosting": "Grundkalkulation",
+    "laborProcessing": "Arbeitskosten",
+    "additionalCosts": "Zusatzkosten"
+  },
   "impressum": {
     "title": "Impressum",
     "sections": {

@@ -151,6 +151,11 @@
   "chart": {
     "mode": "{{mode}} mode"
   },
+  "business": {
+    "coreCosting": "Core Costing",
+    "laborProcessing": "Labor Costs",
+    "additionalCosts": "Additional Costs"
+  },
   "impressum": {
     "title": "Legal Notice",
     "sections": {
