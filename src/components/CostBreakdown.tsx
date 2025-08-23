@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Line, InfoLine } from './ui';
 import { CARD_CLASS } from '../constants';
@@ -23,7 +24,7 @@ interface CostBreakdownProps {
   vatPercent: number;
   vatAmount: number;
   total: number;
-  onCopyBreakdown: () => void;
+  onCopyBreakdown: () => Promise<void>;
   onShare: () => void;
 }
 
@@ -51,6 +52,7 @@ export function CostBreakdown({
   onShare
 }: CostBreakdownProps) {
   const { t } = useTranslation();
+  const [isCopying, setIsCopying] = useState(false);
   
   const fmt = (v: number): string => {
     const browserLocale =
@@ -71,10 +73,26 @@ export function CostBreakdown({
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">{t('costBreakdown.title')}</h2>
         <div className="flex items-center gap-2">
-          <button className="btn btn-soft btn-primary" onClick={onCopyBreakdown} title={t('buttons.copyBreakdown')}>
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
+          <button 
+            className={`btn btn-soft btn-primary ${isCopying ? 'loading' : ''}`}
+            onClick={async () => {
+              setIsCopying(true);
+              try {
+                await onCopyBreakdown();
+              } finally {
+                setIsCopying(false);
+              }
+            }}
+            title={t('buttons.copyBreakdown')}
+            disabled={isCopying}
+          >
+            {isCopying ? (
+              <span className="loading loading-spinner loading-sm mr-2"></span>
+            ) : (
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            )}
           </button>
           <button className="btn btn-soft btn-secondary" onClick={onShare} title={t('buttons.share')}>
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

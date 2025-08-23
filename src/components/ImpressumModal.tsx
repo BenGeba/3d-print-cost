@@ -13,7 +13,6 @@ export function ImpressumModal({ isOpen, onClose }: ImpressumModalProps) {
   return (
     <dialog className="modal modal-open">
       <div className="modal-box max-w-4xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">{t('impressum.title')}</h2>
           <button
@@ -25,10 +24,7 @@ export function ImpressumModal({ isOpen, onClose }: ImpressumModalProps) {
           </button>
         </div>
 
-        {/* Content */}
         <div className="prose prose-sm max-w-none dark:prose-invert">
-          
-          {/* Contact Information */}
           <section className="mb-8">
             <h3 className="text-lg font-semibold mb-4">{t('impressum.sections.contact')}</h3>
             <div className="space-y-2 text-sm">
@@ -49,7 +45,6 @@ export function ImpressumModal({ isOpen, onClose }: ImpressumModalProps) {
             </div>
           </section>
 
-          {/* Disclaimer */}
           <section className="mb-8">
             <h3 className="text-lg font-semibold mb-4">{t('impressum.sections.disclaimer')}</h3>
             <div className="text-sm space-y-3">
@@ -64,7 +59,6 @@ export function ImpressumModal({ isOpen, onClose }: ImpressumModalProps) {
             </div>
           </section>
 
-          {/* App Usage */}
           <section className="mb-8">
             <h3 className="text-lg font-semibold mb-4">{t('impressum.sections.appUsage')}</h3>
             <div className="text-sm space-y-3">
@@ -77,7 +71,6 @@ export function ImpressumModal({ isOpen, onClose }: ImpressumModalProps) {
 
         </div>
 
-        {/* Footer */}
         <div className="modal-action mt-8 pt-6 border-t border-base-300">
           <button 
             className="btn btn-primary"
@@ -88,7 +81,6 @@ export function ImpressumModal({ isOpen, onClose }: ImpressumModalProps) {
         </div>
       </div>
       
-      {/* Backdrop */}
       <div className="modal-backdrop" onClick={onClose}>
         <button>{t('buttons.close')}</button>
       </div>

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import QRCode from 'react-qrcode-logo';
 import { AppState } from '../types';
 import { generateShareUrl } from '../utils';
@@ -15,14 +15,22 @@ interface ShareModalProps {
 export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: ShareModalProps) {
   const [shareOption, setShareOption] = useState<'qr' | 'pdf' | null>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isDownloadingQR, setIsDownloadingQR] = useState(false);
+  const [isGeneratingQR, setIsGeneratingQR] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
   const calculations = useCalculations(appState);
 
   // Generate shareable URL for QR code
-  const getShareData = (): string => {
+  const getShareData = async (): Promise<string> => {
     try {
-      return generateShareUrl(appState);
+      setIsGeneratingQR(true);
+      // Add small delay for user feedback on URL generation
+      await new Promise(resolve => setTimeout(resolve, 200));
+      const url = generateShareUrl(appState);
+      setIsGeneratingQR(false);
+      return url;
     } catch (e) {
+      setIsGeneratingQR(false);
       onError(e instanceof Error ? e.message : 'Error creating share URL');
       return '';
     }
@@ -103,6 +111,8 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
   // Download QR code as PNG
   const downloadQRCode = async (): Promise<void> => {
     try {
+      setIsDownloadingQR(true);
+      
       if (!qrRef.current) {
         onError('QR code not found');
         return;
@@ -118,6 +128,7 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
       canvas.toBlob((blob) => {
         if (!blob) {
           onError('Error creating PNG file');
+          setIsDownloadingQR(false);
           return;
         }
 
@@ -130,9 +141,11 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
         onSuccess('QR code downloaded');
+        setIsDownloadingQR(false);
       }, 'image/png');
     } catch (e) {
       onError('Error downloading QR code');
+      setIsDownloadingQR(false);
     }
   };
 
@@ -184,9 +197,27 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
     }
   }
 
-  if (!isOpen) return null;
+   const [shareData, setShareData] = useState<string>('');
 
-  const shareData = getShareData();
+  // Generate share data when modal opens or shareOption changes to 'qr'
+  React.useEffect(() => {
+    if (isOpen && shareOption === 'qr' && !shareData) {
+      getShareData().then(setShareData);
+    }
+    if (isOpen && shareOption === 'pdf' && !shareData) {
+      getShareData().then(setShareData);
+    }
+  }, [isOpen, shareOption]);
+
+  // Reset share data when modal closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      setShareData('');
+      setShareOption(null);
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="modal modal-open">
@@ -242,38 +273,62 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
             </div>
 
             <div className="text-center space-y-4">
-              <div 
-                ref={qrRef}
-                className="inline-block p-4 bg-white rounded-lg"
-              >
-                <QRCode
-                  size={256}
-                  value={shareData}
-                  ecLevel="M"
-                  qrStyle={"squares"}
-                  logoImage="/logo.svg"
-                  logoOpacity={0.8}
-                  logoPaddingRadius={80}
-                  logoPadding={4}
-                  logoPaddingStyle={"circle"}
-                  removeQrCodeBehindLogo={true}
-                  enableCORS={true}
-                />
-              </div>
+              {shareData && !isGeneratingQR ? (
+                <div 
+                  ref={qrRef}
+                  className="inline-block p-4 bg-white rounded-lg"
+                >
+                  <QRCode
+                    size={256}
+                    value={shareData}
+                    ecLevel="M"
+                    qrStyle={"squares"}
+                    logoImage="/logo.svg"
+                    logoOpacity={0.8}
+                    logoPaddingRadius={80}
+                    logoPadding={4}
+                    logoPaddingStyle={"circle"}
+                    removeQrCodeBehindLogo={true}
+                    enableCORS={true}
+                  />
+                </div>
+              ) : (
+                <div className="inline-block p-4 bg-white rounded-lg">
+                  <div className="w-64 h-64 flex items-center justify-center">
+                    <div className="loading loading-spinner loading-lg text-primary"></div>
+                  </div>
+                </div>
+              )}
               
-              <p className="text-sm opacity-75">
-                Scan this QR code to open the app with the calculation
-              </p>
+              {shareData && !isGeneratingQR ? (
+                <p className="text-sm opacity-75">
+                  Scan this QR code to open the app with the calculation
+                </p>
+              ) : (
+                <p className="text-sm opacity-75">
+                  Generating QR code...
+                </p>
+              )}
 
               <div className="flex gap-2">
                 <button
-                  className="btn btn-primary flex-1"
+                  className={`btn btn-primary flex-1 ${isDownloadingQR ? 'loading' : ''}`}
                   onClick={downloadQRCode}
+                  disabled={isDownloadingQR || !shareData || isGeneratingQR}
                 >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  Download QR Code
+                  {isDownloadingQR ? (
+                    <>
+                      <span className="loading loading-spinner loading-sm mr-2"></span>
+                      Downloading...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      Download QR Code
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -292,24 +347,40 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
             </div>
 
             <div className="text-center space-y-4">
-              <div className="p-8 border-2 border-dashed border-base-300 rounded-lg">
-                <svg className="w-16 h-16 mx-auto mb-4 text-base-content opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <h4 className="text-lg font-semibold mb-2">PDF Export</h4>
-                <p className="text-sm opacity-75 mb-4">
-                  Generate a comprehensive PDF report including all calculation details, cost breakdown, and a QR code to share your calculation.
-                </p>
-                <p className="text-xs opacity-60">
-                  The PDF will include:
-                </p>
-                <ul className="text-xs opacity-60 list-disc list-inside mt-2 space-y-1">
-                  <li>Complete cost breakdown</li>
-                  <li>Print and filament details</li>
-                  <li>QR code for easy sharing</li>
-                  <li>Professional Nord theme styling</li>
-                </ul>
-              </div>
+              {isGeneratingPDF ? (
+                <div className="p-8 border-2 border-dashed border-primary rounded-lg">
+                  <div className="loading loading-spinner loading-lg text-primary mx-auto mb-4"></div>
+                  <h4 className="text-lg font-semibold mb-2">Generating PDF...</h4>
+                  <p className="text-sm opacity-75 mb-4">
+                    Please wait while we create your PDF report with calculation details and QR code.
+                  </p>
+                  <div className="text-xs opacity-60">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <div className="loading loading-dots loading-sm"></div>
+                      Processing calculation data
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-8 border-2 border-dashed border-base-300 rounded-lg">
+                  <svg className="w-16 h-16 mx-auto mb-4 text-base-content opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <h4 className="text-lg font-semibold mb-2">PDF Export</h4>
+                  <p className="text-sm opacity-75 mb-4">
+                    Generate a comprehensive PDF report including all calculation details, cost breakdown, and a QR code to share your calculation.
+                  </p>
+                  <p className="text-xs opacity-60">
+                    The PDF will include:
+                  </p>
+                  <ul className="text-xs opacity-60 list-disc list-inside mt-2 space-y-1">
+                    <li>Complete cost breakdown</li>
+                    <li>Print and filament details</li>
+                    <li>QR code for easy sharing</li>
+                    <li>Professional Nord theme styling</li>
+                  </ul>
+                </div>
+              )}
 
               <button
                 className={`btn btn-primary w-full ${isGeneratingPDF ? 'loading' : ''}`}

@@ -73,6 +73,9 @@ export default function App() {
   // copy breakdown to clipboard + toast
   async function copyBreakdown(): Promise<void> {
     try {
+      // Add a small delay to show the loading state for user feedback
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       const lines: string[] = [];
       lines.push(`Print time: ${prettyDuration(number(s.printTimeHours,0), number(s.printTimeMinutes,0))}`);
       lines.push(`Material: ${fmt(calculations.materialCost)}`);
