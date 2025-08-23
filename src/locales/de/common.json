@@ -150,5 +150,30 @@
   },
   "chart": {
     "mode": "{{mode}}-Modus"
+  },
+  "impressum": {
+    "title": "Impressum",
+    "sections": {
+      "contact": "Kontakt",
+      "disclaimer": "Haftungsausschluss",
+      "appUsage": "Verwendung der App"
+    },
+    "fields": {
+      "name": "Name",
+      "address": "Anschrift",
+      "email": "E-Mail"
+    },
+    "disclaimer": {
+      "contentLiability": "Haftung für Inhalte",
+      "contentLiabilityText": "Die Inhalte dieser Website werden mit größtmöglicher Sorgfalt erstellt. Dennoch kann keine Gewähr für die Richtigkeit, Vollständigkeit und Aktualität der bereitgestellten Inhalte übernommen werden.",
+      "linkLiability": "Haftung für Links",
+      "linkLiabilityText": "Diese Website kann Links zu externen Websites Dritter enthalten. Auf deren Inhalte habe ich keinen Einfluss und kann daher keine Gewähr für diese fremden Inhalte übernehmen. Für die Inhalte verlinkter Seiten sind stets deren Betreiber verantwortlich."
+    },
+    "appUsage": {
+      "description": "Diese App dient als kostenloser Kostenrechner für 3D-Drucke. Alle Berechnungen werden lokal auf Ihrem Gerät durchgeführt. Die App arbeitet als Progressive Web App (PWA) und kann offline genutzt werden.",
+      "noWarranty": "Die Anwendung wird ohne Gewähr zur Verfügung gestellt. Alle berechneten Werte dienen nur zur Orientierung und ersetzen nicht eine professionelle Kalkulation.",
+      "dataProcessing": "Ihre Eingaben werden nur lokal auf Ihrem Gerät gespeichert und nicht an externe Server übertragen, außer Sie nutzen die Teilen-Funktion.",
+      "openSource": "Diese App ist eine Open-Source-Software, die auf GitHub unter der MIT-Lizenz verfügbar ist."
+    }
   }
 }

@@ -11,7 +11,8 @@ import {
   Row,
   Switch,
   Info,
-  ShareModal
+  ShareModal,
+  ImpressumModal
 } from "./components";
 import { usePersistentState, useCalculations, useValidation } from "./hooks";
 import { number, parseInput, prettyDuration, formatToCurrency, parseUrlData, clearUrlData } from "./utils";
@@ -31,6 +32,7 @@ export default function App() {
   const [s, set] = usePersistentState<AppState>("print-cost-calc:v1", defaultState);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [impressumModalOpen, setImpressumModalOpen] = useState(false);
   
   const calculations = useCalculations(s);
   const errors = useValidation(s);
@@ -739,8 +741,17 @@ export default function App() {
           ))}
         </div>
 
-        <footer className="mt-10 text-center text-xs text-gray-500">
-          Built for makers • All calculations client-side • Tailwind-ready
+        <footer className="mt-10 text-center text-xs text-base-content/60">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+            <span>Built for makers • All calculations client-side • Tailwind-ready</span>
+            <span className="hidden sm:inline">•</span>
+            <button
+              onClick={() => setImpressumModalOpen(true)}
+              className="link link-hover text-xs"
+            >
+              {t('impressum.title')}
+            </button>
+          </div>
         </footer>
       </div>
 
@@ -751,6 +762,12 @@ export default function App() {
         appState={s}
         onSuccess={(message) => pushToast('success', message)}
         onError={(message) => pushToast('error', message)}
+      />
+
+      {/* Impressum Modal */}
+      <ImpressumModal
+        isOpen={impressumModalOpen}
+        onClose={() => setImpressumModalOpen(false)}
       />
     </div>
   );
