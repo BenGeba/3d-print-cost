@@ -22,13 +22,13 @@ export function FilamentCard({
   };
 
   return (
-    <div className="card bg-base-100 shadow border border-base-300">
+    <div className="card bg-base-100 shadow border border-base-300 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
       <div className="card-body">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex-1">
             <Field label={t('fields.name')} tip={t('tooltips.filamentName')}>
               <input
-                className={INPUT_CLASS}
+                className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02]`}
                 type="text"
                 placeholder={t('placeholders.filamentName')}
                 value={filament.name}
@@ -38,27 +38,42 @@ export function FilamentCard({
           </div>
           <div className="flex items-center gap-2">
             <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-sm btn-ghost">
+              <div tabIndex={0} role="button" className="btn btn-sm btn-ghost transition-all duration-200 hover:scale-105 hover:bg-primary/10">
                 {t('buttons.presets')}
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor" 
+                  className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180"
+                >
                   <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
                 </svg>
               </div>
-              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-24 p-2 shadow">
+              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-24 p-2 shadow-xl border border-base-300">
                 {Object.keys(presets).map((k) => (
                   <li key={k}>
-                    <button onClick={() => onApplyPreset(k, filament.id)}>{k}</button>
+                    <button 
+                      onClick={() => onApplyPreset(k, filament.id)}
+                      className="transition-all duration-200 hover:scale-105 hover:bg-primary/10"
+                    >
+                      {k}
+                    </button>
                   </li>
                 ))}
               </ul>
             </div>
             {canRemove && (
               <button
-                className="btn btn-sm btn-error btn-soft"
+                className="btn btn-sm btn-error btn-soft transition-all duration-200 hover:scale-110 hover:rotate-90 hover:bg-error/20"
                 onClick={() => onRemove(filament.id)}
                 title={t('buttons.removeFilament')}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor" 
+                  className="w-4 h-4 transition-transform duration-200"
+                >
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                 </svg>
               </button>
@@ -69,7 +84,7 @@ export function FilamentCard({
         <Row>
           <Field label={t('fields.material')}>
             <select
-              className="select select-bordered"
+              className="select select-bordered transition-all duration-200 focus:scale-[1.02] hover:border-primary/50"
               value={filament.material}
               onChange={(e) => onUpdate(filament.id, { material: e.target.value })}
             >
@@ -84,7 +99,7 @@ export function FilamentCard({
             tip={t('tooltips.materialPrice')}
           >
             <input
-              className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-pricePerKg` as keyof typeof errors] ? 'input-error' : ''}`}
+              className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors[`filament-${filament.id}-pricePerKg` as keyof typeof errors] ? 'input-error' : ''}`}
               type="text"
               inputMode="decimal"
               placeholder="0"
@@ -103,7 +118,7 @@ export function FilamentCard({
               tip={t('tooltips.usedAmount')}
             >
               <input
-                className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-usedGrams` as keyof typeof errors] ? 'input-error' : ''}`}
+                className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors[`filament-${filament.id}-usedGrams` as keyof typeof errors] ? 'input-error' : ''}`}
                 type="text"
                 inputMode="decimal"
                 placeholder="0"
@@ -120,7 +135,7 @@ export function FilamentCard({
                 tip={t('tooltips.filamentLength')}
               >
                 <input
-                  className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-lengthMeters` as keyof typeof errors] ? 'input-error' : ''}`}
+                  className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors[`filament-${filament.id}-lengthMeters` as keyof typeof errors] ? 'input-error' : ''}`}
                   type="text"
                   inputMode="decimal"
                   placeholder="0"
@@ -135,7 +150,7 @@ export function FilamentCard({
                 tip={t('tooltips.filamentDiameter')}
               >
                 <input
-                  className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-diameter` as keyof typeof errors] ? 'input-error' : ''}`}
+                  className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors[`filament-${filament.id}-diameter` as keyof typeof errors] ? 'input-error' : ''}`}
                   type="text"
                   inputMode="decimal"
                   placeholder="1.75"
@@ -157,7 +172,7 @@ export function FilamentCard({
               tip={t('tooltips.densityConversion')}
             >
               <input
-                className={`${INPUT_CLASS} ${errors[`filament-${filament.id}-density` as keyof typeof errors] ? 'input-error' : ''}`}
+                className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors[`filament-${filament.id}-density` as keyof typeof errors] ? 'input-error' : ''}`}
                 type="text"
                 inputMode="decimal"
                 placeholder="1.24"

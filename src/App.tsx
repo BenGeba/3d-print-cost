@@ -300,10 +300,20 @@ export default function App() {
   });
 
   useEffect(() => {
-    // Apply theme on mount and when it changes
+    // Apply theme on mount and when it changes with smooth transition
     const theme = isDarkTheme ? 'dracula' : 'nord';
     const root = document.documentElement;
+    
+    // Add transition class before theme change
+    root.classList.add('theme-transitioning');
+    
+    // Apply new theme
     root.setAttribute('data-theme', theme);
+    
+    // Remove transition class after animation completes
+    setTimeout(() => {
+      root.classList.remove('theme-transitioning');
+    }, 300);
     
     // Save theme preference to localStorage
     localStorage.setItem('print-cost-calc:theme', isDarkTheme ? 'dark' : 'light');
@@ -389,19 +399,20 @@ export default function App() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 field-group">
             {/* Filaments */}
-            <Section
-              title={t('sections.filaments')}
-              aside={
-                  <Switch
-                    checked={s.filamentPricingMode === "length"}
-                    onChange={(v) => setMany({ filamentPricingMode: v ? "length" : "grams" })}
-                    labelLeft={t('toggles.byGrams')}
-                    labelRight={t('toggles.byLength')}
-                  />
-              }
-            >
+            <div className="form-section-enter">
+              <Section
+                title={t('sections.filaments')}
+                aside={
+                    <Switch
+                      checked={s.filamentPricingMode === "length"}
+                      onChange={(v) => setMany({ filamentPricingMode: v ? "length" : "grams" })}
+                      labelLeft={t('toggles.byGrams')}
+                      labelRight={t('toggles.byLength')}
+                    />
+                }
+              >
               <div className="space-y-4">
                 {s.filaments.map((filament) => (
                   <FilamentCard
@@ -418,13 +429,18 @@ export default function App() {
                 
                 <div className="flex justify-center pt-2">
                   <button
-                    className="btn btn-soft btn-primary gap-2"
+                    className="btn btn-soft btn-primary gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg group"
                     onClick={addFilament}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      viewBox="0 0 20 20" 
+                      fill="currentColor" 
+                      className="w-5 h-5 transition-transform duration-300 group-hover:rotate-90"
+                    >
                       <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                     </svg>
-                      {t('buttons.addFilament')}
+                    {t('buttons.addFilament')}
                   </button>
                 </div>
               </div>
@@ -432,7 +448,7 @@ export default function App() {
               <Row>
                 <Field label={t('fields.supportWaste')} suffix="%" error={errors.supportWastePercent} tip={t('tooltips.supportWaste')}>
                   <input
-                    className={`${INPUT_CLASS} ${errors.supportWastePercent ? 'input-error' : ''}`}
+                    className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors.supportWastePercent ? 'input-error' : ''}`}
                     type="text"
                     inputMode="decimal"
                     placeholder="0"
@@ -442,7 +458,7 @@ export default function App() {
                 </Field>
                 <Field label={t('fields.failureRate')} suffix="%" hint={t('hints.amortizedReprints')} error={errors.failureRatePercent} tip={t('tooltips.failureRate')}>
                   <input
-                    className={`${INPUT_CLASS} ${errors.failureRatePercent ? 'input-error' : ''}`}
+                    className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors.failureRatePercent ? 'input-error' : ''}`}
                     type="text"
                     inputMode="decimal"
                     placeholder="0"
@@ -451,14 +467,16 @@ export default function App() {
                   />
                 </Field>
               </Row>
-            </Section>
+              </Section>
+            </div>
 
             {/* Energy */}
-            <Section title={t('sections.energy')}>
+            <div className="form-section-enter">
+              <Section title={t('sections.energy')}>
               <Row>
                 <Field label={t('fields.material')}>
                   <select
-                    className="select select-bordered"
+                    className="select select-bordered transition-all duration-200 focus:scale-[1.02] hover:border-primary/50"
                     value={s.material}
                     onChange={(e) => onChangeMaterial(e.target.value)}
                   >
@@ -471,7 +489,7 @@ export default function App() {
                 <Field label={t('fields.averagePower')} suffix="W" error={errors.avgPowerW} tip={t('tooltips.averagePower')}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <select
-                      className="select select-bordered"
+                      className="select select-bordered transition-all duration-200 focus:scale-[1.02] hover:border-primary/50"
                       value={s.powerProfile}
                       onChange={(e) => onChangePowerPreset(e.target.value)}
                     >
@@ -480,7 +498,7 @@ export default function App() {
                       ))}
                     </select>
                     <input
-                      className={`${INPUT_CLASS} ${errors.avgPowerW ? 'input-error' : ''}`}
+                      className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors.avgPowerW ? 'input-error' : ''} ${s.powerProfile !== "custom" ? 'opacity-50' : ''}`}
                       type="text"
                       inputMode="decimal"
                       placeholder="0"
@@ -494,30 +512,30 @@ export default function App() {
                 <Field label={t('fields.printTime')} error={errors.printTimeHours || errors.printTimeMinutes} tip={t('tooltips.printTime')}>
                   <div className="flex items-center gap-2">
                     <input
-                      className={`${INPUT_CLASS} ${errors.printTimeHours ? 'input-error' : ''}`}
+                      className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors.printTimeHours ? 'input-error' : ''}`}
                       type="text"
                       inputMode="numeric"
                       placeholder="0"
                       value={s.printTimeHours}
                       onChange={(e) => setTimeHours(e.target.value)}
                     />
-                    <span className="text-sm text-gray-500">h</span>
+                    <span className="text-sm text-gray-500 transition-colors duration-200">h</span>
                     <input
-                      className={`${INPUT_CLASS} ${errors.printTimeMinutes ? 'input-error' : ''}`}
+                      className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors.printTimeMinutes ? 'input-error' : ''}`}
                       type="text"
                       inputMode="numeric"
                       placeholder="0"
                       value={s.printTimeMinutes}
                       onChange={(e) => setTimeMinutes(e.target.value)}
                     />
-                    <span className="text-sm text-gray-500">min</span>
+                    <span className="text-sm text-gray-500 transition-colors duration-200">min</span>
                   </div>
                 </Field>
               </Row>
               <Row>
                 <Field label={t('fields.energyPrice')} suffix={`${s.currency}${t('units.perKWh')}`} error={errors.energyPricePerKWh} tip={t('tooltips.energyPrice')}>
                   <input
-                    className={`${INPUT_CLASS} ${errors.energyPricePerKWh ? 'input-error' : ''}`}
+                    className={`${INPUT_CLASS} transition-all duration-200 focus:scale-[1.02] ${errors.energyPricePerKWh ? 'input-error' : ''}`}
                     type="text"
                     inputMode="decimal"
                     placeholder="0"
@@ -526,11 +544,13 @@ export default function App() {
                   />
                 </Field>
               </Row>
-            </Section>
+              </Section>
+            </div>
 
             {/* Business-only - Progressive Form Disclosure */}
             {s.mode === "business" && (
-              <Section title={t('sections.businessFactors')}>
+              <div className="form-section-enter">
+                <Section title={t('sections.businessFactors')}>
                 <div className="space-y-4">
                   {/* Core Costs - Default Open */}
                   <div className="collapse collapse-arrow bg-base-100 border border-base-300">
@@ -712,10 +732,12 @@ export default function App() {
                     </div>
                   </div>
                 </div>
-              </Section>
+                </Section>
+              </div>
             )}
 
-            <Section title={t('sections.notes')}>
+            <div className="form-section-enter">
+              <Section title={t('sections.notes')}>
               <Info>
                 <ul className="list-disc pl-5 space-y-1">
                   <li>Average power: measure with a smart plug for best accuracy.</li>
@@ -725,7 +747,8 @@ export default function App() {
                   <li>Both dot (.) and comma (,) work as decimal separators.</li>
                 </ul>
               </Info>
-            </Section>
+              </Section>
+            </div>
           </div>
 
           {/* Summary - Desktop only */}

@@ -4,3 +4,215 @@
   themes: nord --default, dracula --prefersdark;
   logs: true;
 }
+
+/* === MICRO-INTERACTIONS === */
+
+/* Root element theme transitions */
+:root {
+  transition: color-scheme 0.3s ease-out;
+}
+
+/* Global smooth color transitions for theme switching */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 0.25s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Preserve specific element animations that should be faster */
+.btn,
+.input,
+.select,
+.toggle,
+.card,
+.alert {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, transform, opacity;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced button interactions */
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition-duration: 0.1s;
+}
+
+/* Form input focus states */
+.input:focus,
+.select:focus {
+  transform: scale(1.01);
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.2);
+}
+
+/* Input error state animation */
+.input-error {
+  animation: inputError 0.5s ease-out;
+}
+
+@keyframes inputError {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+/* Toggle switch smooth animation */
+.toggle {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle:checked {
+  animation: toggleCheck 0.3s ease-out;
+}
+
+@keyframes toggleCheck {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Card hover effects */
+.card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Collapse animations */
+.collapse-content {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Toast animations */
+.toast {
+  animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast .alert {
+  animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(0.9);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Loading spinner enhancement */
+.loading {
+  animation: spin 1s linear infinite, pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Form section entrance animation */
+.form-section-enter {
+  animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Field validation state transitions */
+.field-error-enter {
+  animation: errorShake 0.5s ease-out;
+}
+
+.field-success-enter {
+  animation: successPulse 0.6s ease-out;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-3px); }
+  40%, 80% { transform: translateX(3px); }
+}
+
+@keyframes successPulse {
+  0% { box-shadow: 0 0 0 0 hsl(var(--success) / 0.4); }
+  70% { box-shadow: 0 0 0 6px hsl(var(--success) / 0); }
+  100% { box-shadow: 0 0 0 0 hsl(var(--success) / 0); }
+}
+
+/* Smooth height transitions for collapsible content */
+.collapse-height {
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stagger animation delays for form fields */
+.field-group > .field:nth-child(1) { animation-delay: 0.1s; }
+.field-group > .field:nth-child(2) { animation-delay: 0.2s; }
+.field-group > .field:nth-child(3) { animation-delay: 0.3s; }
+.field-group > .field:nth-child(4) { animation-delay: 0.4s; }
+
+/* Focus-visible for better accessibility */
+.btn:focus-visible,
+.input:focus-visible,
+.select:focus-visible,
+.toggle:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for theme controller */
+.theme-controller {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
