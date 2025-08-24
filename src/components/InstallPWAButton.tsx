@@ -16,7 +16,7 @@ export default function InstallPWAButton() {
     const checkInstallationStatus = useCallback(() => {
         // Check for standalone mode (app is installed)
         if (window.matchMedia('(display-mode: standalone)').matches ||
-            (window.navigator as any).standalone === true) {
+            ('standalone' in window.navigator && (window.navigator as Navigator & { standalone?: boolean }).standalone)) {
             setInstallState('installed');
             return true;
         }

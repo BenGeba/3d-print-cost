@@ -10,10 +10,10 @@ export default function VersionDisplay({ className = '' }: VersionDisplayProps) 
   const [showDetails, setShowDetails] = useState(false);
   
   // Get version from environment variables injected by Vite
-  const version = import.meta.env.VITE_APP_VERSION || __APP_VERSION__ || '1.0.0';
+  const version = import.meta.env.VITE_APP_VERSION || '1.0.0';
   
   // Get build timestamp from environment or use current date as fallback
-  const buildDate = import.meta.env.VITE_BUILD_DATE || __BUILD_DATE__ || new Date().toISOString().split('T')[0];
+  const buildDate = import.meta.env.VITE_BUILD_DATE || new Date().toISOString().split('T')[0];
   
   return (
     <div className={`inline-flex items-center gap-2 ${className}`}>

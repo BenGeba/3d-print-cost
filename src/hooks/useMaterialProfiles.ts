@@ -12,7 +12,7 @@ export function useMaterialProfiles() {
       if (stored) {
         const parsed = JSON.parse(stored);
         // Convert date strings back to Date objects
-        return parsed.map((profile: any) => ({
+        return parsed.map((profile: MaterialProfile & { createdAt: string; updatedAt: string }) => ({
           ...profile,
           createdAt: new Date(profile.createdAt),
           updatedAt: new Date(profile.updatedAt)

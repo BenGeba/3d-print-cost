@@ -8,7 +8,7 @@ import {
   Image,
   Font
 } from '@react-pdf/renderer';
-import { AppState } from '../types';
+import { AppState, Filament } from '../types';
 import { formatToCurrency, prettyDuration, number } from '../utils';
 
 // Fonts werden dynamisch geladen
@@ -229,7 +229,7 @@ interface CalculationData {
   vatAmount: number;
   total: number;
   totalHours: number;
-  getFilamentGrams: (filament: any) => number;
+  getFilamentGrams: (filament: Filament) => number;
 }
 
 export interface PDFDocumentProps {
@@ -239,6 +239,13 @@ export interface PDFDocumentProps {
 }
 
 export { registerFonts as ensureFontsRegistered };
+
+// Utility function to separate non-component exports
+export const createPDFUtils = () => {
+  return {
+    ensureFontsRegistered: registerFonts
+  };
+};
 
 export const PDFDocument: React.FC<PDFDocumentProps> = ({
   appState, 

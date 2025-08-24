@@ -30,7 +30,7 @@ export function useCalculations(s: AppState) {
       const baseCost = kg * number(filament.pricePerKg, 0);
       return totalCost + (baseCost * failureFactor);
     }, 0);
-  }, [s.filaments, s.filamentPricingMode, materialWasteFactor, failureFactor]);
+  }, [s.filaments, s.filamentPricingMode, materialWasteFactor, failureFactor, getFilamentGrams]);
 
   const totalHours = number(s.printTimeHours, 0) + number(s.printTimeMinutes, 0) / 60;
 

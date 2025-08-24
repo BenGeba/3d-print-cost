@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Filament, MaterialProfile } from './filament';
 import { ValidationErrors } from './app-state';
 

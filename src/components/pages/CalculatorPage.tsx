@@ -11,20 +11,41 @@ import {
   Info
 } from "../index";
 import { 
-  presets, 
   POWER_PRESETS, 
-  MATERIALS, 
-  PRINTER_MATERIAL_OVERRIDES, 
+  MATERIALS,
   INPUT_CLASS,
   CARD_CLASS
 } from "../../constants";
 import { AppState, Filament, ValidationErrors, MaterialProfile } from "../../types";
-import { number, parseInput, prettyDuration } from "../../utils";
+import { parseInput } from "../../utils";
+
+type CalculationResults = {
+  materialCost: number;
+  energyCost: number;
+  depreciationCost: number;
+  maintenanceCost: number;
+  laborCost: number;
+  preparationCost: number;
+  postProcessingCost: number;
+  baseSubtotal: number;
+  shippingCost: number;
+  packagingCost: number;
+  subtotalWithExtras: number;
+  margin: number;
+  netTotal: number;
+  vatPercent: number;
+  vatAmount: number;
+  total: number;
+  targetProfit: number;
+  requiredSellingPrice: number;
+  totalHours: number;
+  getFilamentGrams: (filament: Filament) => number;
+};
 
 interface CalculatorPageProps {
   s: AppState;
   setMany: (patch: Partial<AppState>) => void;
-  calculations: any;
+  calculations: CalculationResults;
   errors: ValidationErrors;
   materialProfiles: {
     profiles: MaterialProfile[];
@@ -67,7 +88,6 @@ export default function CalculatorPage({
   setTimeMinutes,
   onChangePowerPreset,
   onChangeMaterial,
-  pushToast
 }: CalculatorPageProps) {
   const { t } = useTranslation();
 

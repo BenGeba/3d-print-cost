@@ -44,7 +44,7 @@ export default function App() {
         set(urlData);
         clearUrlData();
         pushToast('success', t('messages.calculationLoaded'), 4000);
-      } catch (error) {
+      } catch {
         clearUrlData();
         pushToast('error', t('messages.errorLoadingCalculation'), 5000);
       }
@@ -108,7 +108,7 @@ export default function App() {
         document.body.removeChild(ta);
       }
       pushToast('success', t('messages.breakdownCopied'));
-    } catch (e) {
+    } catch {
       pushToast('error', t('messages.copyFailed'));
     }
   }
@@ -439,7 +439,7 @@ export default function App() {
             <div key={t.id} className={`alert ${t.kind === 'success' ? 'alert-success' : t.kind === 'error' ? 'alert-error' : 'alert-info'} flex items-center gap-2`}>
               <span>{t.message}</span>
               {t.actionLabel && (
-                <button className="btn btn-soft" onClick={() => { t.actionFn && t.actionFn(); removeToast(t.id); }}>{t.actionLabel}</button>
+                <button className="btn btn-soft" onClick={() => { t.actionFn?.(); removeToast(t.id); }}>{t.actionLabel}</button>
               )}
             </div>
           ))}

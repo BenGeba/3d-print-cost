@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Filament } from '../types';
 
 export function usePersistentState<T>(key: string, initial: T): [T, React.Dispatch<React.SetStateAction<T>>] {
@@ -53,7 +53,9 @@ export function usePersistentState<T>(key: string, initial: T): [T, React.Dispat
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(state));
-    } catch {}
+    } catch {
+      // Silently ignore localStorage errors (e.g., when storage is full)
+    }
   }, [key, state]);
   
   return [state, setState];

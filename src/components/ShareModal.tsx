@@ -143,7 +143,7 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
         onSuccess('QR code downloaded');
         setIsDownloadingQR(false);
       }, 'image/png');
-    } catch (e) {
+    } catch {
       onError('Error downloading QR code');
       setIsDownloadingQR(false);
     }
@@ -207,7 +207,7 @@ export function ShareModal({ isOpen, onClose, appState, onSuccess, onError }: Sh
     if (isOpen && shareOption === 'pdf' && !shareData) {
       getShareData().then(setShareData);
     }
-  }, [isOpen, shareOption]);
+  }, [isOpen, shareOption, getShareData, shareData]);
 
   // Reset share data when modal closes
   React.useEffect(() => {

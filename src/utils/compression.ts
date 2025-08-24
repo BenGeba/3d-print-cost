@@ -1,5 +1,8 @@
-import LZString from 'lz-string';
-import { AppState } from '../types';
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
+import { AppState, Filament } from '../types';
+
+type CompressedState = Record<string, unknown>;
+type CompressedFilament = Record<string, unknown>;
 
 // Shortened field names for compression (maps full field names to short ones)
 const FIELD_MAP: Record<string, string> = {
@@ -84,13 +87,13 @@ const DEFAULT_VALUES: Partial<AppState> = {
   currency: 'EUR'
 };
 
-function optimizeForCompression(appState: AppState): any {
-  const optimized: any = {};
+function optimizeForCompression(appState: AppState): CompressedState {
+  const optimized: CompressedState = {};
   
   // Process main fields
   for (const [fullKey, shortKey] of Object.entries(FIELD_MAP)) {
-    const value = (appState as any)[fullKey];
-    const defaultValue = (DEFAULT_VALUES as any)[fullKey];
+    const value = (appState as unknown as Record<string, unknown>)[fullKey];
+    const defaultValue = (DEFAULT_VALUES as unknown as Record<string, unknown>)[fullKey];
     
     // Skip if value equals default or is empty/null/undefined
     if (value !== undefined && value !== null && value !== '' && value !== defaultValue) {
@@ -106,9 +109,9 @@ function optimizeForCompression(appState: AppState): any {
   // Process filaments with shortened field names
   if (appState.filaments && appState.filaments.length > 0) {
     optimized.f = appState.filaments.map(filament => {
-      const optimizedFilament: any = {};
+      const optimizedFilament: CompressedFilament = {};
       for (const [fullKey, shortKey] of Object.entries(FILAMENT_FIELD_MAP)) {
-        const value = (filament as any)[fullKey];
+        const value = (filament as unknown as Record<string, unknown>)[fullKey];
         if (value !== undefined && value !== null && value !== '') {
           // Convert string numbers to actual numbers where possible
           if (typeof value === 'string' && !isNaN(Number(value)) && value.trim() !== '') {
@@ -125,8 +128,8 @@ function optimizeForCompression(appState: AppState): any {
   return optimized;
 }
 
-function restoreFromOptimized(optimized: any): AppState {
-  const restored: any = { ...DEFAULT_VALUES };
+function restoreFromOptimized(optimized: CompressedState): AppState {
+  const restored: Record<string, unknown> = { ...DEFAULT_VALUES };
 
   for (const [shortKey, fullKey] of Object.entries(REVERSE_FIELD_MAP)) {
     if (optimized[shortKey] !== undefined) {
@@ -135,35 +138,35 @@ function restoreFromOptimized(optimized: any): AppState {
   }
 
   if (optimized.f && Array.isArray(optimized.f)) {
-    restored.filaments = optimized.f.map((filament: any) => {
-      const restoredFilament: any = {};
+    restored.filaments = (optimized.f as CompressedFilament[]).map((filament: CompressedFilament) => {
+      const restoredFilament: Record<string, unknown> = {};
       for (const [shortKey, fullKey] of Object.entries(REVERSE_FILAMENT_FIELD_MAP)) {
         if (filament[shortKey] !== undefined) {
           restoredFilament[fullKey] = filament[shortKey];
         }
       }
-      return restoredFilament;
+      return restoredFilament as unknown as Filament;
     });
   } else {
     restored.filaments = [];
   }
   
-  return restored as AppState;
+  return restored as unknown as AppState;
 }
 
 export function compressAppState(appState: AppState): string {
   try {
     const optimized = optimizeForCompression(appState);
     const json = JSON.stringify(optimized);
-    return LZString.compressToEncodedURIComponent(json);
-  } catch (error) {
+    return compressToEncodedURIComponent(json);
+  } catch {
     throw new Error('Error compressing data');
   }
 }
 
 export function decompressAppState(compressedData: string): AppState {
   try {
-    const json = LZString.decompressFromEncodedURIComponent(compressedData);
+    const json = decompressFromEncodedURIComponent(compressedData);
     if (!json) {
       throw new Error('Error decompressing data');
     }
@@ -265,7 +268,7 @@ export function parseUrlData(): AppState | null {
     
     // lz-string compressToEncodedURIComponent already handles URL encoding
     return decompressAppState(data);
-  } catch (error) {
+  } catch {
     // Return null for parsing errors - caller should handle appropriately
     return null;
   }
