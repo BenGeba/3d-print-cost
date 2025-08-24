@@ -1,5 +1,5 @@
 import React from 'react';
-import { Filament } from './filament';
+import { Filament, MaterialProfile } from './filament';
 import { ValidationErrors } from './app-state';
 
 // UI component prop types
@@ -43,6 +43,8 @@ export interface FilamentCardProps {
   onUpdate: (id: string, updates: Partial<Filament>) => void;
   onRemove: (id: string) => void;
   onApplyPreset: (name: string, filamentId: string) => void;
+  onLoadProfile?: (profile: MaterialProfile, filamentId: string) => void;
+  materialProfiles?: MaterialProfile[];
   errors: ValidationErrors;
   canRemove: boolean;
 }

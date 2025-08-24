@@ -39,7 +39,15 @@
     "margin": "Gewinnspanne",
     "targetProfit": "Zielgewinn",
     "postProcessingTime": "Nachbearbeitungszeit",
-    "postProcessingRate": "Nachbearbeitungsstundensatz"
+    "postProcessingRate": "Nachbearbeitungsstundensatz",
+    "profileName": "Name des Profils",
+    "materialType": "Materialtyp",
+    "brand": "Marke",
+    "color": "Farbe",
+    "totalSpoolWeight": "Gesamtgewicht Spule (g)",
+    "emptySpoolWeight": "Leergewicht Spule (g)",
+    "filamentWeight": "Filamentgewicht (g)",
+    "url": "URL"
   },
   "units": {
     "percent": "%",
@@ -119,11 +127,24 @@
     "back": "Zurück",
     "retry": "Installation wiederholen",
     "install": "App installieren",
-    "presets": "Vorlagen"
+    "presets": "Vorlagen",
+    "newProfile": "Neues Profil",
+    "createProfile": "Profil erstellen",
+    "updateProfile": "Profil aktualisieren",
+    "load": "Laden",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "cancel": "Abbrechen"
   },
   "placeholders": {
     "filamentName": "Filamentname",
-    "notes": "Optionale Notizen..."
+    "notes": "Optionale Notizen...",
+    "brandExample": "z.B. SUNLU, Bambu Lab, Polyterra",
+    "colorExample": "z.B. Rot, Schwarz, Transparent",
+    "totalWeight": "Spule + Filament",
+    "emptyWeight": "Nur die leere Spule",
+    "autoCalculated": "Wird automatisch berechnet",
+    "urlExample": "Link zum Shop oder Produktseite"
   },
   "messages": {
     "calculationLoaded": "Berechnung erfolgreich geladen",
@@ -146,7 +167,8 @@
     "themeChanged": "Theme: {{theme}}",
     "undo": "Rückgängig",
     "dark": "Dunkel",
-    "light": "Hell"
+    "light": "Hell",
+    "profileLoaded": "Profil erfolgreich geladen"
   },
   "chart": {
     "mode": "{{mode}}-Modus"
@@ -189,5 +211,49 @@
       "dataProcessing": "Ihre Eingaben werden nur lokal auf Ihrem Gerät gespeichert und nicht an externe Server übertragen, außer Sie nutzen die Teilen-Funktion.",
       "openSource": "Diese App ist eine Open-Source-Software, die auf GitHub unter der MIT-Lizenz verfügbar ist."
     }
+  },
+  "navigation": {
+    "calculator": "Rechner",
+    "profiles": "Material-Profile"
+  },
+  "pages": {
+    "profiles": {
+      "title": "Material-Profile",
+      "description": "Verwalten Sie Ihre Filament-Materialprofile für schnellen Zugriff auf Preise und Spezifikationen.",
+      "tips": {
+        "title": "Tipps für die Profilverwaltung",
+        "accurate": "Halten Sie Ihre Profile genau, indem Sie leere Spulen wiegen und exakte Kaufpreise notieren.",
+        "brands": "Erstellen Sie separate Profile für verschiedene Marken, da Preise und Dichten erheblich variieren können.",
+        "colors": "Einige Farben (wie metallisch oder transparent) können andere Dichten haben als Standardfarben.",
+        "updates": "Aktualisieren Sie Profile bei Preisänderungen, um genaue Kostenberechnungen zu gewährleisten.",
+        "urls": "Fügen Sie Kauf-URLs hinzu, um Materialien schnell nachbestellen zu können, wenn sie zur Neige gehen."
+      }
+    }
+  },
+  "profiles": {
+    "title": "Material Profile",
+    "savedProfiles": "Gespeicherte Profile",
+    "noProfiles": "Noch keine Profile erstellt"
+  },
+  "stats": {
+    "totalProfiles": "Profile gesamt",
+    "materialTypes": "Materialtypen", 
+    "brands": "Marken"
+  },
+  "materials": {
+    "other": "Andere"
+  },
+  "common": {
+    "optional": "Optional"
+  },
+  "info": {
+    "costPerGram": "Kosten pro Gramm"
+  },
+  "aria": {
+    "cancelForm": "Formular abbrechen",
+    "createNewProfile": "Neues Profil erstellen",
+    "loadProfile": "Profil laden",
+    "editProfile": "Profil bearbeiten",
+    "deleteProfile": "Profil löschen"
   }
 }

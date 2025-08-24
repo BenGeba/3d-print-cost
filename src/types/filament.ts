@@ -25,3 +25,21 @@ export interface MaterialOption {
   label: string;
   multiplier: number;
 }
+
+export interface MaterialProfile {
+  id: string;
+  name: string;
+  materialType: string; // PLA, PETG, ABS, etc.
+  brand: string; // SUNLU, Bambu Lab, Polyterra, etc.
+  color: string;
+  pricePerKg: number | string;
+  totalSpoolWeight: number | string; // Spulenleergewicht + Filamentgewicht
+  emptySpoolWeight: number | string; // Reine Spule
+  filamentWeight: number | string; // Reines Filamentgewicht
+  costPerGram: number; // Automatisch berechnet
+  url?: string; // Optional URL für Bezugsquelle
+  density: number | string; // Materialdichte
+  diameter: number | string; // Filament Durchmesser
+  createdAt: Date;
+  updatedAt: Date;
+}

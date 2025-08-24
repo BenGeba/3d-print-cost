@@ -1,5 +1,5 @@
 // Export all types from a central location
-export type { Filament, MaterialPreset, PowerPreset, MaterialOption } from './filament';
+export type { Filament, MaterialPreset, PowerPreset, MaterialOption, MaterialProfile } from './filament';
 export type { AppState, ValidationErrors } from './app-state';
 export type { 
   FieldProps, 

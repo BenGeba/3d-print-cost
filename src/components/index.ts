@@ -9,4 +9,7 @@ export { ImpressumModal } from './ImpressumModal';
 export { LanguageSwitcher } from './LanguageSwitcher';
 export { default as VersionDisplay } from './VersionDisplay';
 export { default as PWAUpdateNotification } from './PWAUpdateNotification';
+export { default as MaterialProfileManager } from './MaterialProfileManager';
+export { default as CalculatorPage } from './pages/CalculatorPage';
+export { default as MaterialProfilesPage } from './pages/MaterialProfilesPage';
 export * from './ui';

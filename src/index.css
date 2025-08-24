@@ -2,7 +2,6 @@
 
 @plugin "daisyui" {
   themes: nord --default, dracula --prefersdark;
-  logs: true;
 }
 
 /* === MICRO-INTERACTIONS === */

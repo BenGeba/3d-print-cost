@@ -39,7 +39,15 @@
     "margin": "Margin",
     "targetProfit": "Target profit amount",
     "postProcessingTime": "Post-processing time",
-    "postProcessingRate": "Post-processing rate"
+    "postProcessingRate": "Post-processing rate",
+    "profileName": "Profile Name",
+    "materialType": "Material Type",
+    "brand": "Brand",
+    "color": "Color",
+    "totalSpoolWeight": "Total Spool Weight (g)",
+    "emptySpoolWeight": "Empty Spool Weight (g)",
+    "filamentWeight": "Filament Weight (g)",
+    "url": "URL"
   },
   "units": {
     "percent": "%",
@@ -119,11 +127,24 @@
     "back": "Back",
     "retry": "Retry Install",
     "install": "Install App",
-    "presets": "Presets"
+    "presets": "Presets",
+    "newProfile": "New Profile",
+    "createProfile": "Create Profile",
+    "updateProfile": "Update Profile",
+    "load": "Load",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel"
   },
   "placeholders": {
     "filamentName": "Filament name",
-    "notes": "Optional notes..."
+    "notes": "Optional notes...",
+    "brandExample": "e.g. SUNLU, Bambu Lab, Polyterra",
+    "colorExample": "e.g. Red, Black, Transparent",
+    "totalWeight": "Spool + Filament",
+    "emptyWeight": "Empty spool only",
+    "autoCalculated": "Calculated automatically",
+    "urlExample": "Link to shop or product page"
   },
   "messages": {
     "calculationLoaded": "Calculation loaded successfully",
@@ -146,7 +167,8 @@
     "themeChanged": "Theme: {{theme}}",
     "undo": "Undo",
     "dark": "Dark",
-    "light": "Light"
+    "light": "Light",
+    "profileLoaded": "Profile loaded successfully"
   },
   "chart": {
     "mode": "{{mode}} mode"
@@ -189,5 +211,49 @@
       "dataProcessing": "Your input data is stored only locally on your device and is not transmitted to external servers, unless you use the sharing function.",
       "openSource": "This app is open source software available on GitHub under the MIT license."
     }
+  },
+  "navigation": {
+    "calculator": "Calculator",
+    "profiles": "Material Profiles"
+  },
+  "pages": {
+    "profiles": {
+      "title": "Material Profiles",
+      "description": "Manage your filament material profiles for quick access to pricing and specifications.",
+      "tips": {
+        "title": "Profile Management Tips",
+        "accurate": "Keep your profiles accurate by weighing empty spools and noting exact purchase prices.",
+        "brands": "Create separate profiles for different brands as prices and densities can vary significantly.",
+        "colors": "Some colors (like metallic or transparent) may have different densities than standard colors.",
+        "updates": "Update profiles when prices change to maintain accurate cost calculations.",
+        "urls": "Include purchase URLs to quickly reorder materials when running low."
+      }
+    }
+  },
+  "profiles": {
+    "title": "Material Profile",
+    "savedProfiles": "Saved Profiles",
+    "noProfiles": "No profiles created yet"
+  },
+  "stats": {
+    "totalProfiles": "Total Profiles",
+    "materialTypes": "Material Types", 
+    "brands": "Brands"
+  },
+  "materials": {
+    "other": "Other"
+  },
+  "common": {
+    "optional": "Optional"
+  },
+  "info": {
+    "costPerGram": "Cost per gram"
+  },
+  "aria": {
+    "cancelForm": "Cancel form",
+    "createNewProfile": "Create new profile",
+    "loadProfile": "Load profile",
+    "editProfile": "Edit profile",
+    "deleteProfile": "Delete profile"
   }
 }
