@@ -51,7 +51,7 @@ export function usePWAUpdate(): PWAUpdateState & PWAUpdateActions {
     // Register the service worker
     workbox.register()
       .then((reg) => {
-        setRegistration(reg);
+        setRegistration(reg || null);
         console.log('PWA: Service worker registered successfully');
       })
       .catch((err) => {
