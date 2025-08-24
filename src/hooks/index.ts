@@ -2,3 +2,4 @@
 export { usePersistentState } from './usePersistentState';
 export { useCalculations } from './useCalculations';
 export { useValidation } from './useValidation';
+export { usePWAUpdate } from './usePWAUpdate';

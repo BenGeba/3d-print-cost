@@ -2,15 +2,42 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import tailwindcss from '@tailwindcss/vite'
+import { readFileSync } from 'fs'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
 
 const repo = '3d-print-cost';
+
+// Get current directory for ES modules (replaces __dirname)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Read package.json to get version
+const packageJson = JSON.parse(
+  readFileSync(resolve(__dirname, 'package.json'), 'utf-8')
+);
+
+// Get build info
+const getBuildInfo = () => {
+  const date = new Date().toISOString().split('T')[0];
+  return {
+    date,
+    timestamp: Date.now(),
+  };
+};
 
 export default defineConfig(({ mode }) => {
   const isProd = mode === 'production';
   const base = isProd ? `/${repo}/` : '/';
+  const buildInfo = getBuildInfo();
 
   return {
     base,
+    define: {
+      __APP_VERSION__: JSON.stringify(packageJson.version),
+      __BUILD_DATE__: JSON.stringify(buildInfo.date),
+      __BUILD_TIMESTAMP__: buildInfo.timestamp,
+    },
     plugins: [
       react(),
       tailwindcss(),
@@ -19,6 +46,11 @@ export default defineConfig(({ mode }) => {
         injectRegister: 'auto',
         devOptions: { enabled: false },
         includeAssets: ['favicon.ico', 'logo.svg', 'apple-touch-icon-180x180.png'],
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}'],
+          skipWaiting: false,
+          clientsClaim: false
+        },
         manifest: {
           id: `${base}?source=pwa`,
           name: '3D Print Cost',

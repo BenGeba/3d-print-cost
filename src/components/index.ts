@@ -7,4 +7,6 @@ export { CostChart } from './CostChart';
 export { ShareModal } from './ShareModal';
 export { ImpressumModal } from './ImpressumModal';
 export { LanguageSwitcher } from './LanguageSwitcher';
+export { default as VersionDisplay } from './VersionDisplay';
+export { default as PWAUpdateNotification } from './PWAUpdateNotification';
 export * from './ui';

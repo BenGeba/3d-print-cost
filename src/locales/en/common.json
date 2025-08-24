@@ -156,6 +156,15 @@
     "laborProcessing": "Labor Costs",
     "additionalCosts": "Additional Costs"
   },
+  "pwa": {
+    "updateAvailable": "Update available",
+    "updateDescription": "A new version of the app is available.",
+    "updateError": "Update failed. Please try again.",
+    "updateLater": "Later",
+    "updateNow": "Update",
+    "updating": "Updating...",
+    "showVersion": "Show version"
+  },
   "impressum": {
     "title": "Legal Notice",
     "sections": {

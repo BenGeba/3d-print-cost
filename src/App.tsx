@@ -12,7 +12,9 @@ import {
   Switch,
   Info,
   ShareModal,
-  ImpressumModal
+  ImpressumModal,
+  VersionDisplay,
+  PWAUpdateNotification
 } from "./components";
 import { usePersistentState, useCalculations, useValidation } from "./hooks";
 import { number, parseInput, prettyDuration, formatToCurrency, parseUrlData, clearUrlData } from "./utils";
@@ -815,6 +817,10 @@ export default function App() {
             >
               {t('impressum.title')}
             </button>
+            <span className="hidden sm:inline">•</span>
+            <div className="relative">
+              <VersionDisplay />
+            </div>
           </div>
         </footer>
       </div>
@@ -833,6 +839,9 @@ export default function App() {
         isOpen={impressumModalOpen}
         onClose={() => setImpressumModalOpen(false)}
       />
+
+      {/* PWA Update Notification */}
+      <PWAUpdateNotification />
     </div>
   );
 }

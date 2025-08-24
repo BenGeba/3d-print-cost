@@ -156,6 +156,15 @@
     "laborProcessing": "Arbeitskosten",
     "additionalCosts": "Zusatzkosten"
   },
+  "pwa": {
+    "updateAvailable": "Update verfügbar",
+    "updateDescription": "Eine neue Version der App ist verfügbar.",
+    "updateError": "Fehler beim Update. Versuchen Sie es erneut.",
+    "updateLater": "Später",
+    "updateNow": "Aktualisieren",
+    "updating": "Aktualisiere...",
+    "showVersion": "Version anzeigen"
+  },
   "impressum": {
     "title": "Impressum",
     "sections": {
