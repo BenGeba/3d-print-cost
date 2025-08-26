@@ -19,7 +19,7 @@ export default function VersionDisplay({ className = '' }: VersionDisplayProps) 
     <div className={`inline-flex items-center gap-2 ${className}`}>
       <button
         onClick={() => setShowDetails(!showDetails)}
-        className="text-xs text-base-content/60 hover:text-base-content/80 transition-colors cursor-pointer"
+        className="text-xs hover:text-base-content/80 transition-colors cursor-pointer"
         title={t('pwa.showVersion')}
       >
         v{version}
