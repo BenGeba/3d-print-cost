@@ -241,12 +241,6 @@ export interface PDFDocumentProps {
 export { registerFonts as ensureFontsRegistered };
 
 // Utility function to separate non-component exports
-export const createPDFUtils = () => {
-  return {
-    ensureFontsRegistered: registerFonts
-  };
-};
-
 export const PDFDocument: React.FC<PDFDocumentProps> = ({
   appState, 
   calculations, 
