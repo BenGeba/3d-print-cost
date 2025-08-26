@@ -27,7 +27,10 @@ export function usePWAUpdate(): PWAUpdateState & PWAUpdateActions {
       return;
     }
 
-    const workbox = new Workbox('/sw.js');
+    // Get the correct service worker path based on the current base path
+    const basePath = import.meta.env.BASE_URL || '/';
+    const swPath = basePath + 'sw.js';
+    const workbox = new Workbox(swPath);
     setWb(workbox);
 
     // Event: SW is waiting to activate (update available)
