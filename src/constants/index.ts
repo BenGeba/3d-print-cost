@@ -3,3 +3,5 @@ export { presets, POWER_PRESETS, MATERIALS, PRINTER_MATERIAL_OVERRIDES } from '.
 export { defaultState, CARD_CLASS, LABEL_CLASS, INPUT_CLASS, SUBTLE } from './defaults';
 export { PWA_TIMEOUTS, PWA_ERROR_MESSAGES, PWA_BUTTON_TEXT, PWA_BUTTON_CLASSES } from './pwa';
 export { DEFAULT_CURRENCY, SYMBOL_TO_ISO, CURRENCY_FORMATTING } from './currency';
+export { LASER_POWER_PRESETS, LASER_MATERIAL_PRESETS, defaultLaserState } from './laser';
+export type { LaserMaterialPreset, LaserPowerPreset } from './laser';

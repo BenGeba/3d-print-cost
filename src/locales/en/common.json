@@ -161,8 +161,44 @@
     "overhead": "Consider separate business overhead (rent, insurance) if applicable."
   },
   "nav": {
-    "calculator": "Calculator",
+    "calculator": "3D Print",
+    "laser": "Laser",
     "history": "History"
+  },
+  "laser": {
+    "sections": {
+      "job": "Job Settings",
+      "material": "Material (Blanks)"
+    },
+    "fields": {
+      "jobTime": "Job duration",
+      "itemsPerJob": "Items per job",
+      "materialPreset": "Material preset",
+      "pricePerBlank": "Price per blank",
+      "blanksUsed": "Blanks used",
+      "wastePercent": "Scrap rate",
+      "machinePrice": "Machine price",
+      "costPerItem": "Cost per item"
+    },
+    "tooltips": {
+      "itemsPerJob": "How many items are engraved/cut in this job?",
+      "pricePerBlank": "Purchase price of a single blank",
+      "blanksUsed": "Number of blanks actually used",
+      "wastePercent": "Percentage markup for scrap and material loss"
+    },
+    "presets": {
+      "40w-diode": "40W Diode Laser",
+      "60w-mopa": "60W MOPA Laser",
+      "custom": "Custom",
+      "cork": "Cork (coaster)",
+      "slate": "Slate (coaster)",
+      "wood-keychain": "Wood (keychain)",
+      "leather-keychain": "Leather (keychain)",
+      "wood-opener": "Wood (bottle opener)",
+      "bottle-steel": "Stainless steel (bottle)"
+    },
+    "resetTitle": "Reset settings?",
+    "resetDescription": "All fields will be restored to their defaults."
   },
   "history": {
     "title": "Project History",

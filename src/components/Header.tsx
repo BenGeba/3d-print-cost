@@ -25,6 +25,28 @@ export function Header({
 
     return (
         <header className="mb-8">
+            {/* Bottom navigation for mobile */}
+            <div className="btm-nav md:hidden z-40 border-t border-base-300">
+                <NavLink to="/" end className={({ isActive }) => isActive ? 'active text-primary' : ''}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
+                    </svg>
+                    <span className="btm-nav-label text-xs">{t('nav.calculator')}</span>
+                </NavLink>
+                <NavLink to="/laser" className={({ isActive }) => isActive ? 'active text-primary' : ''}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span className="btm-nav-label text-xs">{t('nav.laser')}</span>
+                </NavLink>
+                <NavLink to="/history" className={({ isActive }) => isActive ? 'active text-primary' : ''}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className="btm-nav-label text-xs">{t('nav.history')}</span>
+                </NavLink>
+            </div>
+
             <div className="navbar bg-base-100 shadow-sm border-b border-base-300 mb-6 rounded-lg px-2 sm:px-4">
                 <div className="navbar-start">
                     {/* Brand/Logo - responsive text size */}
@@ -41,6 +63,14 @@ export function Header({
                             }
                         >
                             {t('nav.calculator')}
+                        </NavLink>
+                        <NavLink
+                            to="/laser"
+                            className={({ isActive }) =>
+                                `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`
+                            }
+                        >
+                            {t('nav.laser')}
                         </NavLink>
                         <NavLink
                             to="/history"

@@ -4,3 +4,5 @@ export { useCalculations } from './useCalculations';
 export { useValidation } from './useValidation';
 export { usePWAUpdate } from './usePWAUpdate';
 export { useSavedProjects } from './useSavedProjects';
+export { useLaserCalculations } from './useLaserCalculations';
+export { useLaserValidation } from './useLaserValidation';

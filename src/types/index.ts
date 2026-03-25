@@ -12,4 +12,5 @@ export type {
   Toast
 } from './ui';
 export type { BeforeInstallPromptEvent, InstallState } from './pwa';
+export type { LaserState, LaserValidationErrors } from './laser-state';
 export type { CurrencyConfig, FormatCurrencyInput } from './currency';

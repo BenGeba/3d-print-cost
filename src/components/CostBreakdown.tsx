@@ -25,6 +25,8 @@ interface CostBreakdownProps {
   onCopyBreakdown: () => Promise<void>;
   onShare: () => void;
   onSave: () => void;
+  /** Override the time row label (default: t('fields.printTime')) */
+  timeLabel?: string;
 }
 
 export function CostBreakdown({
@@ -47,7 +49,8 @@ export function CostBreakdown({
   total,
   onCopyBreakdown,
   onShare,
-  onSave
+  onSave,
+  timeLabel,
 }: CostBreakdownProps) {
   const { t } = useTranslation();
   const [isCopying, setIsCopying] = useState(false);
@@ -106,7 +109,7 @@ export function CostBreakdown({
       </div>
       <div className="space-y-3">
         <InfoLine 
-          label={t('fields.printTime')} 
+          label={timeLabel ?? t('fields.printTime')}
           value={prettyDuration(number(printTimeHours, 0), number(printTimeMinutes, 0))} 
         />
         <Line label={t('costBreakdown.material')} value={materialCost} currency={currency} />

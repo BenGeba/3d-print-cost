@@ -12,4 +12,5 @@ export { default as PWAUpdateNotification } from './PWAUpdateNotification';
 export { default as CalculatorPage } from './pages/CalculatorPage';
 export { default as HistoryPage } from './pages/HistoryPage';
 export { SaveProjectModal } from './SaveProjectModal';
+export { LaserPage } from './pages/LaserPage';
 export * from './ui';

@@ -161,8 +161,44 @@
     "overhead": "Separate Gemeinkosten (Miete, Versicherung) ggf. ergänzen."
   },
   "nav": {
-    "calculator": "Rechner",
+    "calculator": "3D-Druck",
+    "laser": "Laser",
     "history": "Verlauf"
+  },
+  "laser": {
+    "sections": {
+      "job": "Job-Einstellungen",
+      "material": "Material (Rohlinge)"
+    },
+    "fields": {
+      "jobTime": "Jobdauer",
+      "itemsPerJob": "Stück pro Job",
+      "materialPreset": "Material-Vorlage",
+      "pricePerBlank": "Preis pro Rohling",
+      "blanksUsed": "Anzahl Rohlinge",
+      "wastePercent": "Ausschussrate",
+      "machinePrice": "Maschinenpreis",
+      "costPerItem": "Kosten pro Stück"
+    },
+    "tooltips": {
+      "itemsPerJob": "Wie viele Teile werden in diesem Job graviert/geschnitten?",
+      "pricePerBlank": "Einkaufspreis eines einzelnen Rohlings",
+      "blanksUsed": "Anzahl der tatsächlich verwendeten Rohlinge",
+      "wastePercent": "Prozentualer Aufschlag für Ausschuss und Materialverlust"
+    },
+    "presets": {
+      "40w-diode": "40W Diodenlaser",
+      "60w-mopa": "60W MOPA Laser",
+      "custom": "Benutzerdefiniert",
+      "cork": "Kork (Untersetzer)",
+      "slate": "Schiefer (Untersetzer)",
+      "wood-keychain": "Holz (Schlüsselanhänger)",
+      "leather-keychain": "Leder (Schlüsselanhänger)",
+      "wood-opener": "Holz (Flaschenöffner)",
+      "bottle-steel": "Edelstahl (Trinkflasche)"
+    },
+    "resetTitle": "Einstellungen zurücksetzen?",
+    "resetDescription": "Alle Felder werden auf die Standardwerte zurückgesetzt."
   },
   "history": {
     "title": "Projekthistorie",
