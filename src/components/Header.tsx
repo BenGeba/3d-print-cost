@@ -1,5 +1,5 @@
 import { ChangeEvent } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Switch } from './ui';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -22,135 +22,35 @@ export function Header({
                            onThemeChange
                        }: HeaderProps) {
     const { t } = useTranslation();
-    const location = useLocation();
-
-    const isActive = (path: string) => location.pathname === path;
-
-    const navItems = [
-        {
-            path: '/',
-            label: t('navigation.calculator', 'Calculator'),
-            icon: (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-5 h-5"
-                >
-                    {/* Calculator Icon */}
-                    <path d="M7 2C5.9 2 5 2.9 5 4V20C5 21.1 5.9 22 7 22H17C18.1 22 19 21.1 19 20V4C19 2.9 18.1 2 17 2H7ZM7 4H17V8H7V4ZM7 10H9V12H7V10ZM11 10H13V12H11V10ZM15 10H17V12H15V10ZM7 14H9V16H7V14ZM11 14H13V16H11V14ZM15 14H17V20H15V14ZM7 18H9V20H7V18ZM11 18H13V20H11V18Z"/>
-                </svg>
-            )
-        },
-        {
-            path: '/profiles',
-            label: t('navigation.profiles', 'Material Profiles'),
-            icon: (
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="w-5 h-5"
-                >
-                    {/* Material Layers/Profiles Icon */}
-                    <path d="M12 2L2 7L12 12L22 7L12 2ZM2 17L12 22L22 17L18.5 15L12 18L5.5 15L2 17ZM2 12L12 17L22 12L18.5 10L12 13L5.5 10L2 12Z"/>
-                </svg>
-            )
-        }
-    ];
 
     return (
         <header className="mb-8">
             <div className="navbar bg-base-100 shadow-sm border-b border-base-300 mb-6 rounded-lg px-2 sm:px-4">
                 <div className="navbar-start">
-                    {/* Mobile Burger Menu - Zeigt auf kleinen Bildschirmen, versteckt auf großen */}
-                    <div className="dropdown lg:hidden">
-                        <div tabIndex={0} role="button" className="btn btn-ghost btn-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
-                            </svg>
-                        </div>
-                        <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-64 p-2 shadow">
-                            {navItems.map((item) => (
-                                <li key={item.path}>
-                                    <Link
-                                        to={item.path}
-                                        className={`gap-3 transition-all duration-200 ${
-                                            isActive(item.path)
-                                                ? 'active bg-primary text-primary-content'
-                                                : ''
-                                        }`}
-                                    >
-                                        {item.icon}
-                                        {item.label}
-                                    </Link>
-                                </li>
-                            ))}
-                            {/* Mobile-only controls in dropdown */}
-                            <div className="divider my-2"></div>
-                            <li className="menu-title">Settings</li>
-                            <li>
-                                <div className="flex items-center justify-between gap-2 px-2">
-                                    <span className="text-sm flex-shrink-0">Language:</span>
-                                    <div className="flex-shrink-0">
-                                        <LanguageSwitcher />
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="flex items-center justify-between gap-2 px-2">
-                                    <span className="text-sm flex-shrink-0">Currency:</span>
-                                    <select
-                                        className="select select-xs select-bordered w-20 flex-shrink-0"
-                                        value={currency}
-                                        onChange={(e) => onCurrencyChange(e.target.value)}
-                                    >
-                                        <option>EUR</option>
-                                        <option>USD</option>
-                                        <option>GBP</option>
-                                    </select>
-                                </div>
-                            </li>
-                            <li>
-                                <div className="flex flex-col gap-2 px-2">
-                                    <span className="text-sm">Mode:</span>
-                                    <Switch
-                                        checked={mode === "business"}
-                                        onChange={onModeToggle}
-                                        labelLeft={t('app.modes.hobby')}
-                                        labelRight={t('app.modes.business')}
-                                    />
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
                     {/* Brand/Logo - responsive text size */}
                     <Link to="/" className="btn btn-ghost text-lg sm:text-xl truncate">
                         <span className="hidden sm:inline">{t('app.title')}</span>
                         <span className="sm:hidden">3D Print Calc</span>
                     </Link>
-                </div>
-
-                {/* Desktop Navigation - Zeigt nur auf großen Bildschirmen */}
-                <div className="navbar-center hidden lg:flex">
-                    <ul className="menu menu-horizontal px-1">
-                        {navItems.map((item) => (
-                            <li key={item.path}>
-                                <Link
-                                    to={item.path}
-                                    className={`gap-2 transition-all duration-200 hover:scale-105 ${
-                                        isActive(item.path)
-                                            ? 'active bg-primary text-primary-content'
-                                            : ''
-                                    }`}
-                                >
-                                    {item.icon}
-                                    {item.label}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
+                    <nav className="hidden md:flex items-center gap-1 ml-2">
+                        <NavLink
+                            to="/"
+                            end
+                            className={({ isActive }) =>
+                                `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`
+                            }
+                        >
+                            {t('nav.calculator')}
+                        </NavLink>
+                        <NavLink
+                            to="/history"
+                            className={({ isActive }) =>
+                                `btn btn-ghost btn-sm ${isActive ? 'btn-active' : ''}`
+                            }
+                        >
+                            {t('nav.history')}
+                        </NavLink>
+                    </nav>
                 </div>
 
                 {/* Right side controls - Responsive */}

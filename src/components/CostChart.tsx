@@ -12,8 +12,6 @@ interface CostChartProps {
   maintenanceCost: number;
   depreciationCost: number;
   laborCost: number;
-  preparationCost: number;
-  postProcessingCost: number;
   shippingCost: number;
   packagingCost: number;
   vatAmount: number;
@@ -36,8 +34,6 @@ export function CostChart({
   maintenanceCost,
   depreciationCost,
   laborCost,
-  preparationCost,
-  postProcessingCost,
   shippingCost,
   packagingCost,
   vatAmount,
@@ -119,24 +115,6 @@ export function CostChart({
         });
       }
       
-      if (preparationCost > 0) {
-        data.push({
-          label: 'Preparation',
-          value: preparationCost,
-          percentage: (preparationCost / total) * 100,
-          color: colors[colorIndex++]
-        });
-      }
-      
-      if (postProcessingCost > 0) {
-        data.push({
-          label: 'Post-processing',
-          value: postProcessingCost,
-          percentage: (postProcessingCost / total) * 100,
-          color: colors[colorIndex++]
-        });
-      }
-      
       if (shippingCost > 0) {
         data.push({
           label: 'Shipping',
@@ -175,7 +153,7 @@ export function CostChart({
     }
     
     return data.filter(item => item.value > 0);
-  }, [mode, materialCost, energyCost, maintenanceCost, depreciationCost, laborCost, preparationCost, postProcessingCost, shippingCost, packagingCost, vatAmount, margin, total]);
+  }, [mode, materialCost, energyCost, maintenanceCost, depreciationCost, laborCost, shippingCost, packagingCost, vatAmount, margin, total]);
 
   // Prepare data for MUI Charts
   const muiChartData = useMemo(() => {

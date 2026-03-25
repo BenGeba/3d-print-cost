@@ -53,17 +53,7 @@ export function useCalculations(s: AppState) {
     return hours * number(s.laborRatePerHour, 0);
   }, [s.laborMinutes, s.laborRatePerHour]);
 
-  const preparationCost = useMemo(() => {
-    const hours = number(s.preparationMinutes, 0) / 60;
-    return hours * number(s.preparationHourlyRate, 0);
-  }, [s.preparationMinutes, s.preparationHourlyRate]);
-
-  const postProcessingCost = useMemo(() => {
-    const hours = number(s.postProcessingMinutes, 0) / 60;
-    return hours * number(s.postProcessingHourlyRate, 0);
-  }, [s.postProcessingMinutes, s.postProcessingHourlyRate]);
-
-  const baseSubtotal = materialCost + energyCost + maintenanceCost + (s.mode === "business" ? depreciationCost + laborCost + preparationCost + postProcessingCost : 0);
+  const baseSubtotal = materialCost + energyCost + maintenanceCost + (s.mode === "business" ? depreciationCost + laborCost : 0);
 
   const shippingCost = s.mode === "business" ? number(s.shippingCost, 0) : 0;
   const packagingCost = s.mode === "business" ? number(s.packagingCost, 0) : 0;
@@ -92,8 +82,6 @@ export function useCalculations(s: AppState) {
     depreciationCost,
     maintenanceCost,
     laborCost,
-    preparationCost,
-    postProcessingCost,
     baseSubtotal,
     shippingCost,
     packagingCost,

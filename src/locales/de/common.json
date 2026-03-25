@@ -11,7 +11,7 @@
     "filaments": "Filamente",
     "energy": "Energie",
     "businessFactors": "Geschäftsfaktoren",
-    "notes": "Notizen"
+    "notes": "Hinweise"
   },
   "fields": {
     "name": "Name",
@@ -31,23 +31,11 @@
     "maintenance": "Wartung",
     "laborRate": "Arbeitsstundensatz",
     "laborTime": "Arbeitszeit",
-    "preparationTime": "Vorbereitungszeit",
-    "preparationRate": "Vorbereitungsstundensatz",
     "shippingCost": "Versandkosten",
     "packagingCost": "Verpackungskosten",
     "vatTax": "MwSt. / Steuer",
     "margin": "Gewinnspanne",
-    "targetProfit": "Zielgewinn",
-    "postProcessingTime": "Nachbearbeitungszeit",
-    "postProcessingRate": "Nachbearbeitungsstundensatz",
-    "profileName": "Name des Profils",
-    "materialType": "Materialtyp",
-    "brand": "Marke",
-    "color": "Farbe",
-    "totalSpoolWeight": "Gesamtgewicht Spule (g)",
-    "emptySpoolWeight": "Leergewicht Spule (g)",
-    "filamentWeight": "Filamentgewicht (g)",
-    "url": "URL"
+    "targetProfit": "Zielgewinn"
   },
   "units": {
     "percent": "%",
@@ -67,32 +55,28 @@
   },
   "tooltips": {
     "failureRate": "Anteil fehlgeschlagener Drucke über die Zeit (0–100%)",
-    "averagePower": "Mittlere Wattzahl während des stationären Druckens (mit Smart Plug messen)",
+    "averagePower": "Mittlere Wattzahl während des Druckens (mit Smart Plug messen)",
     "printTime": "Gesamte Düsen-Ein-Zeit; Minuten normalisieren auf 0–59",
     "energyPrice": "Ihr Strompreis pro Einheit",
-    "printerPrice": "Kaufpreis für lineare Abschreibung verwendet",
+    "printerPrice": "Kaufpreis für lineare Abschreibung",
     "lifetime": "Erwartete produktive Stunden bis zum Austausch",
     "maintenance": "Verbrauchsmaterialien & Verschleiß pro Druckstunde",
-    "laborRate": "Ihr Stundensatz für Handling & Nachbearbeitung",
-    "laborTime": "Hands-on Zeit (Setup, Aufräumen)",
-    "preparationTime": "Zeit für Vorbereitungsaufgaben",
-    "preparationRate": "Stundensatz für Vorbereitungsaufgaben",
+    "laborRate": "Ihr Stundensatz für manuelle Arbeiten",
+    "laborTime": "Manuelle Arbeitszeit (Vorbereitung, Nachbereitung, etc.)",
     "shippingCost": "Feste Versandkosten pro Bestellung",
     "packagingCost": "Feste Verpackungskosten pro Bestellung",
-    "vatTax": "MwSt.-Prozentsatz auf Nettosumme angewendet",
-    "margin": "Aufschlag-Prozentsatz auf Zwischensumme angewendet",
+    "vatTax": "MwSt.-Prozentsatz auf Nettosumme",
+    "margin": "Aufschlag-Prozentsatz auf Zwischensumme",
     "targetProfit": "Gewünschten Gewinn eingeben, um erforderlichen Verkaufspreis zu berechnen",
     "filamentName": "Benutzerdefinierte Bezeichnung für dieses Filament",
     "materialPrice": "Materialpreis pro Kilogramm",
     "usedAmount": "Slicer-Schätzung oder gemessenes Gewicht verwenden",
     "filamentLength": "Vom Slicer oder Spulen-Meterzähler",
-    "filamentDensity": "Materialdichte für Gewichtsberechnungen",
     "filamentDiameter": "Typisch: 1,75 mm oder 2,85 mm",
-    "densityHint": "PLA≈1,24, PETG≈1,27, ABS≈1,04, TPU≈1,21",
     "densityConversion": "Materialdichte für Länge→Gramm Umrechnung",
     "supportWaste": "Zusätzliches Material für Stützen, Brim, Spülung, etc.",
-    "postProcessingTime": "Zeit für Schleifen, Lackieren, etc.",
-    "postProcessingRate": "Stundensatz für Schleifen, Lackieren, etc."
+    "materialAdjustsNote": "Materialwechsel passt die Leistung anhand offizieller Herstellerdaten oder eines Materialmultiplikators an.",
+    "energyPresetNote": "Voreinstellungen gelten für PLA bei ~60°C Bett; der tatsächliche Verbrauch hängt von Temperatur, Gehäuse und Raumklima ab."
   },
   "toggles": {
     "byGrams": "Nach Gramm",
@@ -104,15 +88,13 @@
     "energy": "Energie",
     "maintenance": "Wartung",
     "depreciation": "Abschreibung",
-    "labor": "Arbeit",
-    "preparation": "Vorbereitung",
+    "labor": "Arbeitskosten",
     "shipping": "Versand",
     "packaging": "Verpackung",
     "netTotal": "Nettosumme",
     "vat": "MwSt.",
     "subtotal": "Zwischensumme",
     "total": "Gesamt",
-    "postProcessing": "Nachbearbeitung",
     "marginWithPercent": "Gewinnspanne ({{percent}}%)",
     "vatWithPercent": "MwSt. ({{percent}}%)"
   },
@@ -127,24 +109,12 @@
     "back": "Zurück",
     "retry": "Installation wiederholen",
     "install": "App installieren",
+    "cancel": "Abbrechen",
     "presets": "Vorlagen",
-    "newProfile": "Neues Profil",
-    "createProfile": "Profil erstellen",
-    "updateProfile": "Profil aktualisieren",
-    "load": "Laden",
-    "edit": "Bearbeiten",
-    "delete": "Löschen",
-    "cancel": "Abbrechen"
+    "saveProject": "Projekt speichern"
   },
   "placeholders": {
-    "filamentName": "Filamentname",
-    "notes": "Optionale Notizen...",
-    "brandExample": "z.B. SUNLU, Bambu Lab, Polyterra",
-    "colorExample": "z.B. Rot, Schwarz, Transparent",
-    "totalWeight": "Spule + Filament",
-    "emptyWeight": "Nur die leere Spule",
-    "autoCalculated": "Wird automatisch berechnet",
-    "urlExample": "Link zum Shop oder Produktseite"
+    "filamentName": "Filamentname"
   },
   "messages": {
     "calculationLoaded": "Berechnung erfolgreich geladen",
@@ -168,15 +138,39 @@
     "undo": "Rückgängig",
     "dark": "Dunkel",
     "light": "Hell",
-    "profileLoaded": "Profil erfolgreich geladen"
-  },
-  "chart": {
-    "mode": "{{mode}}-Modus"
+    "projectSaved": "Projekt gespeichert",
+    "projectLoaded": "Projekt geladen"
   },
   "business": {
     "coreCosting": "Grundkalkulation",
-    "laborProcessing": "Arbeitskosten",
+    "labor": "Arbeitskosten",
     "additionalCosts": "Zusatzkosten"
+  },
+  "notes": {
+    "averagePower": "Durchschnittsleistung: Mit einem Smart Plug für beste Genauigkeit messen.",
+    "failureRate": "Fehlerrate: Wird als anteiliger Multiplikator auf die Materialkosten angewandt.",
+    "depreciation": "Abschreibung: Lineare Methode – Druckerpreis ÷ Lebensdauer in Stunden.",
+    "lengthConversion": "Längenbasiert: Dichte & Durchmesser rechnen Meter in Gramm um.",
+    "decimalSeparator": "Dezimaltrennzeichen: Punkt (.) und Komma (,) werden beide akzeptiert."
+  },
+  "quickTips": {
+    "title": "Schnelltipps",
+    "slicerEstimates": "Slicer-Schätzungen für Gramm und Stunden verwenden, dann mit Istwerten verfeinern.",
+    "failedPrints": "Fehldrucke protokollieren, um die Fehlerrate zu kalibrieren.",
+    "prices": "Preise je Materialmarke pflegen – Spulenpreise schwanken stark.",
+    "overhead": "Separate Gemeinkosten (Miete, Versicherung) ggf. ergänzen."
+  },
+  "nav": {
+    "calculator": "Rechner",
+    "history": "Verlauf"
+  },
+  "history": {
+    "title": "Projekthistorie",
+    "empty": "Noch keine Projekte gespeichert.",
+    "load": "Laden",
+    "delete": "Löschen",
+    "savedOn": "Gespeichert am",
+    "saveTitle": "Projekt speichern"
   },
   "pwa": {
     "updateAvailable": "Update verfügbar",
@@ -211,49 +205,5 @@
       "dataProcessing": "Ihre Eingaben werden nur lokal auf Ihrem Gerät gespeichert und nicht an externe Server übertragen, außer Sie nutzen die Teilen-Funktion.",
       "openSource": "Diese App ist eine Open-Source-Software, die auf GitHub unter der MIT-Lizenz verfügbar ist."
     }
-  },
-  "navigation": {
-    "calculator": "Rechner",
-    "profiles": "Material-Profile"
-  },
-  "pages": {
-    "profiles": {
-      "title": "Material-Profile",
-      "description": "Verwalten Sie Ihre Filament-Materialprofile für schnellen Zugriff auf Preise und Spezifikationen.",
-      "tips": {
-        "title": "Tipps für die Profilverwaltung",
-        "accurate": "Halten Sie Ihre Profile genau, indem Sie leere Spulen wiegen und exakte Kaufpreise notieren.",
-        "brands": "Erstellen Sie separate Profile für verschiedene Marken, da Preise und Dichten erheblich variieren können.",
-        "colors": "Einige Farben (wie metallisch oder transparent) können andere Dichten haben als Standardfarben.",
-        "updates": "Aktualisieren Sie Profile bei Preisänderungen, um genaue Kostenberechnungen zu gewährleisten.",
-        "urls": "Fügen Sie Kauf-URLs hinzu, um Materialien schnell nachbestellen zu können, wenn sie zur Neige gehen."
-      }
-    }
-  },
-  "profiles": {
-    "title": "Material Profile",
-    "savedProfiles": "Gespeicherte Profile",
-    "noProfiles": "Noch keine Profile erstellt"
-  },
-  "stats": {
-    "totalProfiles": "Profile gesamt",
-    "materialTypes": "Materialtypen", 
-    "brands": "Marken"
-  },
-  "materials": {
-    "other": "Andere"
-  },
-  "common": {
-    "optional": "Optional"
-  },
-  "info": {
-    "costPerGram": "Kosten pro Gramm"
-  },
-  "aria": {
-    "cancelForm": "Formular abbrechen",
-    "createNewProfile": "Neues Profil erstellen",
-    "loadProfile": "Profil laden",
-    "editProfile": "Profil bearbeiten",
-    "deleteProfile": "Profil löschen"
   }
 }

@@ -23,10 +23,6 @@ export interface AppState {
   maintenanceEurPerHour: number | string;
   laborRatePerHour: number | string;
   laborMinutes: number | string;
-  preparationMinutes: number | string;
-  preparationHourlyRate: number | string;
-  postProcessingMinutes: number | string;
-  postProcessingHourlyRate: number | string;
   marginPercent: number | string;
   shippingCost: number | string;
   packagingCost: number | string;

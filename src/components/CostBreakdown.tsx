@@ -14,8 +14,6 @@ interface CostBreakdownProps {
   maintenanceCost: number;
   depreciationCost: number;
   laborCost: number;
-  preparationCost: number;
-  postProcessingCost: number;
   shippingCost: number;
   packagingCost: number;
   marginPercent: number | string;
@@ -26,6 +24,7 @@ interface CostBreakdownProps {
   total: number;
   onCopyBreakdown: () => Promise<void>;
   onShare: () => void;
+  onSave: () => void;
 }
 
 export function CostBreakdown({
@@ -38,8 +37,6 @@ export function CostBreakdown({
   maintenanceCost,
   depreciationCost,
   laborCost,
-  preparationCost,
-  postProcessingCost,
   shippingCost,
   packagingCost,
   marginPercent,
@@ -49,7 +46,8 @@ export function CostBreakdown({
   vatAmount,
   total,
   onCopyBreakdown,
-  onShare
+  onShare,
+  onSave
 }: CostBreakdownProps) {
   const { t } = useTranslation();
   const [isCopying, setIsCopying] = useState(false);
@@ -72,9 +70,9 @@ export function CostBreakdown({
     <div className={CARD_CLASS}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">{t('costBreakdown.title')}</h2>
-        <div className="flex items-center gap-2">
-          <button 
-            className={`btn btn-soft btn-primary ${isCopying ? 'loading' : ''}`}
+        <div className="flex items-center gap-1">
+          <button
+            className="btn btn-soft btn-primary btn-square"
             onClick={async () => {
               setIsCopying(true);
               try {
@@ -87,15 +85,20 @@ export function CostBreakdown({
             disabled={isCopying}
           >
             {isCopying ? (
-              <span className="loading loading-spinner loading-sm mr-2"></span>
+              <span className="loading loading-spinner loading-xs"></span>
             ) : (
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg style={{ width: '1rem', height: '1rem', flexShrink: 0 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
             )}
           </button>
-          <button className="btn btn-soft btn-secondary" onClick={onShare} title={t('buttons.share')}>
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button className="btn btn-soft btn-accent btn-square" onClick={onSave} title={t('buttons.saveProject')}>
+            <svg style={{ width: '1rem', height: '1rem', flexShrink: 0 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 3H7a2 2 0 00-2 2v16l7-3 7 3V5a2 2 0 00-2-2z" />
+            </svg>
+          </button>
+          <button className="btn btn-soft btn-secondary btn-square" onClick={onShare} title={t('buttons.share')}>
+            <svg style={{ width: '1rem', height: '1rem', flexShrink: 0 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
             </svg>
           </button>
@@ -113,8 +116,6 @@ export function CostBreakdown({
           <>
             <Line label={t('costBreakdown.depreciation')} value={depreciationCost} currency={currency} />
             <Line label={t('costBreakdown.labor')} value={laborCost} currency={currency} />
-            {preparationCost > 0 && <Line label={t('costBreakdown.preparation')} value={preparationCost} currency={currency} />}
-            {postProcessingCost > 0 && <Line label={t('costBreakdown.postProcessing')} value={postProcessingCost} currency={currency} />}
             {shippingCost > 0 && <Line label={t('costBreakdown.shipping')} value={shippingCost} currency={currency} />}
             {packagingCost > 0 && <Line label={t('costBreakdown.packaging')} value={packagingCost} currency={currency} />}
           </>

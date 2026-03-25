@@ -1,16 +1,17 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { 
-  Header, 
+import {
+  Header,
   CalculatorPage,
-  MaterialProfilesPage,
+  HistoryPage,
   ShareModal,
   ImpressumModal,
+  SaveProjectModal,
   VersionDisplay,
   PWAUpdateNotification
 } from "./components";
-import { usePersistentState, useCalculations, useValidation, useMaterialProfiles } from "./hooks";
+import { usePersistentState, useCalculations, useValidation, useSavedProjects } from "./hooks";
 import { number, parseInput, prettyDuration, formatToCurrency, parseUrlData, clearUrlData } from "./utils";
 import { 
   presets, 
@@ -19,7 +20,7 @@ import {
   PRINTER_MATERIAL_OVERRIDES, 
   defaultState
 } from "./constants";
-import { AppState, Filament, Toast, MaterialProfile } from "./types";
+import { AppState, Filament, Toast, SavedProject } from "./types";
 import InstallPWAButton from "./components/InstallPWAButton.tsx";
 
 export default function App() {
@@ -28,13 +29,14 @@ export default function App() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [impressumModalOpen, setImpressumModalOpen] = useState(false);
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const { projects, saveProject, deleteProject } = useSavedProjects();
   
   // Get base path from Vite's import.meta.env.BASE_URL
   const basePath = import.meta.env.BASE_URL;
   
   const calculations = useCalculations(s);
   const errors = useValidation(s);
-  const materialProfiles = useMaterialProfiles();
 
   // Check for URL parameters on app startup
   useEffect(() => {
@@ -83,8 +85,6 @@ export default function App() {
       if (s.mode === 'business') {
         lines.push(`Depreciation: ${fmt(calculations.depreciationCost)}`);
         lines.push(`Labor: ${fmt(calculations.laborCost)}`);
-        if (calculations.preparationCost > 0) lines.push(`Preparation: ${fmt(calculations.preparationCost)}`);
-        if (calculations.postProcessingCost > 0) lines.push(`Post-processing: ${fmt(calculations.postProcessingCost)}`);
         if (calculations.shippingCost > 0) lines.push(`Shipping: ${fmt(calculations.shippingCost)}`);
         if (calculations.packagingCost > 0) lines.push(`Packaging: ${fmt(calculations.packagingCost)}`);
       }
@@ -200,33 +200,6 @@ export default function App() {
     }
   }
 
-  // Material Profile functions
-  function loadMaterialProfile(profile: MaterialProfile, filamentId?: string): void {
-    if (filamentId) {
-      // Apply to specific filament
-      updateFilament(filamentId, {
-        name: profile.name,
-        pricePerKg: profile.pricePerKg,
-        density: profile.density,
-        diameter: profile.diameter,
-        material: profile.materialType
-      });
-      pushToast('success', `Profil "${profile.name}" zu Filament geladen`);
-    } else {
-      // Apply to all filaments (fallback)
-      const updatedFilaments = s.filaments.map(f => ({
-        ...f,
-        name: profile.name,
-        pricePerKg: profile.pricePerKg,
-        density: profile.density,
-        diameter: profile.diameter,
-        material: profile.materialType
-      }));
-      setMany({ filaments: updatedFilaments });
-      pushToast('success', `Profil "${profile.name}" zu allen Filamenten geladen`);
-    }
-  }
-
   function resetDefaults(): void {
     set(defaultState);
   }
@@ -306,6 +279,25 @@ export default function App() {
     } else {
       pushToast('info', `Material: ${matKey}`);
     }
+  }
+
+  function handleSaveProject(name: string): void {
+    const project: SavedProject = {
+      id: Date.now().toString(),
+      name,
+      savedAt: new Date().toISOString(),
+      appState: s,
+      total: calculations.total,
+      currency: s.currency,
+      mode: s.mode,
+    };
+    saveProject(project);
+    pushToast('success', t('messages.projectSaved'), 3500);
+  }
+
+  function handleLoadProject(project: SavedProject): void {
+    set(project.appState);
+    pushToast('success', t('messages.projectLoaded'), 3500);
   }
 
   // --- Theme (light/dark) via daisyUI theme-controller ---
@@ -404,12 +396,10 @@ export default function App() {
                 setMany={setMany}
                 calculations={calculations}
                 errors={errors}
-                materialProfiles={materialProfiles}
                 updateFilament={updateFilament}
                 addFilament={addFilament}
                 removeFilament={removeFilament}
                 applyPreset={applyPreset}
-                loadMaterialProfile={loadMaterialProfile}
                 copyBreakdown={copyBreakdown}
                 handleShare={handleShare}
                 onChangeMargin={onChangeMargin}
@@ -418,16 +408,17 @@ export default function App() {
                 onChangePowerPreset={onChangePowerPreset}
                 onChangeMaterial={onChangeMaterial}
                 pushToast={pushToast}
+                handleSave={() => setSaveModalOpen(true)}
               />
             }
           />
           <Route
-            path="/profiles"
+            path="/history"
             element={
-              <MaterialProfilesPage
-                materialProfiles={materialProfiles}
-                onLoadProfile={loadMaterialProfile}
-                pushToast={pushToast}
+              <HistoryPage
+                projects={projects}
+                onLoad={handleLoadProject}
+                onDelete={deleteProject}
               />
             }
           />
@@ -460,6 +451,13 @@ export default function App() {
                   <InstallPWAButton />
               </div>
           </div>
+
+        {/* Save Project Modal */}
+        <SaveProjectModal
+          isOpen={saveModalOpen}
+          onClose={() => setSaveModalOpen(false)}
+          onSave={handleSaveProject}
+        />
 
         {/* Share Modal */}
         <ShareModal
@@ -494,7 +492,8 @@ export default function App() {
                       <br />
                       Built for makers • All calculations client-side
                   </p>
-                  <p>Copyright © {new Date().getFullYear()} - All right reserved - <VersionDisplay /></p>
+                  <p>Copyright © {new Date().getFullYear()} - All right reserved</p>
+                  <VersionDisplay />
                   <button
                       onClick={() => setImpressumModalOpen(true)}
                       className="link link-hover text-xs"

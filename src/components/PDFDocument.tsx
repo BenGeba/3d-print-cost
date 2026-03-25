@@ -221,8 +221,6 @@ interface CalculationData {
   depreciationCost: number;
   maintenanceCost: number;
   laborCost: number;
-  preparationCost: number;
-  postProcessingCost: number;
   shippingCost: number;
   packagingCost: number;
   margin: number;
@@ -342,18 +340,6 @@ export const PDFDocument: React.FC<PDFDocumentProps> = ({
                     <View style={styles.row}>
                         <Text style={styles.label}>Labor:</Text>
                         <Text style={styles.value}>{formatCurrency(calculations.laborCost)}</Text>
-                    </View>
-                )}
-                {appState.mode === 'business' && calculations.preparationCost > 0 && (
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Preparation:</Text>
-                        <Text style={styles.value}>{formatCurrency(calculations.preparationCost)}</Text>
-                    </View>
-                )}
-                {appState.mode === 'business' && calculations.postProcessingCost > 0 && (
-                    <View style={styles.row}>
-                        <Text style={styles.label}>Post-processing:</Text>
-                        <Text style={styles.value}>{formatCurrency(calculations.postProcessingCost)}</Text>
                     </View>
                 )}
                 {appState.mode === 'business' && calculations.shippingCost > 0 && (

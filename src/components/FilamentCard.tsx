@@ -3,23 +3,19 @@ import { FilamentCardProps } from '../types';
 import { presets, MATERIALS, INPUT_CLASS } from '../constants';
 import { Field, Row } from './ui';
 
-export function FilamentCard({ 
-  filament, 
-  filamentPricingMode, 
-  onUpdate, 
-  onRemove, 
+export function FilamentCard({
+  filament,
+  filamentPricingMode,
+  onUpdate,
+  onRemove,
   onApplyPreset,
-  onLoadProfile,
-  materialProfiles = [],
-  errors, 
-  canRemove 
+  errors,
+  canRemove
 }: FilamentCardProps) {
   const { t } = useTranslation();
-  
-  // Helper to parse input value for controlled components
+
   const parseInput = (v: string): string | number => {
     if (v === "") return "";
-    // Replace comma with dot for internal storage
     return String(v).replace(",", ".");
   };
 
@@ -39,48 +35,14 @@ export function FilamentCard({
             </Field>
           </div>
           <div className="flex items-center gap-2">
-            {/* Material Profiles Dropdown */}
-            {onLoadProfile && materialProfiles.length > 0 && (
-              <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className="btn btn-soft btn-sm btn-secondary transition-all duration-200 hover:scale-105 hover:bg-secondary/10">
-                  Profile
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 20 20" 
-                    fill="currentColor" 
-                    className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180"
-                  >
-                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-48 p-2 shadow-xl border border-base-300 max-h-64 overflow-y-auto">
-                  {materialProfiles.map((profile) => (
-                    <li key={profile.id}>
-                      <button 
-                        onClick={() => onLoadProfile(profile, filament.id)}
-                        className="transition-all duration-200 hover:scale-105 hover:bg-secondary/10 text-left"
-                      >
-                        <div>
-                          <div className="font-medium">{profile.name}</div>
-                          <div className="text-xs text-base-content/70">
-                            {profile.materialType} • {profile.brand}
-                          </div>
-                        </div>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
             {/* Material Presets Dropdown */}
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn btn-sm btn-ghost transition-all duration-200 hover:scale-105 hover:bg-primary/10">
                 {t('buttons.presets')}
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 20 20" 
-                  fill="currentColor" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                   className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180"
                 >
                   <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
@@ -89,7 +51,7 @@ export function FilamentCard({
               <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-24 p-2 shadow-xl border border-base-300">
                 {Object.keys(presets).map((k) => (
                   <li key={k}>
-                    <button 
+                    <button
                       onClick={() => onApplyPreset(k, filament.id)}
                       className="transition-all duration-200 hover:scale-105 hover:bg-primary/10"
                     >
@@ -105,10 +67,10 @@ export function FilamentCard({
                 onClick={() => onRemove(filament.id)}
                 title={t('buttons.removeFilament')}
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 20 20" 
-                  fill="currentColor" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                   className="w-4 h-4 transition-transform duration-200"
                 >
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
@@ -117,7 +79,7 @@ export function FilamentCard({
             )}
           </div>
         </div>
-        
+
         <Row>
           <Field label={t('fields.material')}>
             <select
@@ -130,9 +92,9 @@ export function FilamentCard({
               ))}
             </select>
           </Field>
-          <Field 
-            label={t('fields.pricePerKg')} 
-            error={errors[`filament-${filament.id}-pricePerKg` as keyof typeof errors]} 
+          <Field
+            label={t('fields.pricePerKg')}
+            error={errors[`filament-${filament.id}-pricePerKg` as keyof typeof errors]}
             tip={t('tooltips.materialPrice')}
           >
             <input
@@ -148,10 +110,10 @@ export function FilamentCard({
 
         <Row>
           {filamentPricingMode === "grams" ? (
-            <Field 
-              label={t('fields.usedAmount')} 
-              suffix={t('units.grams')} 
-              error={errors[`filament-${filament.id}-usedGrams` as keyof typeof errors]} 
+            <Field
+              label={t('fields.usedAmount')}
+              suffix={t('units.grams')}
+              error={errors[`filament-${filament.id}-usedGrams` as keyof typeof errors]}
               tip={t('tooltips.usedAmount')}
             >
               <input
@@ -165,10 +127,10 @@ export function FilamentCard({
             </Field>
           ) : (
             <>
-              <Field 
-                label={t('fields.length')} 
-                suffix="m" 
-                error={errors[`filament-${filament.id}-lengthMeters` as keyof typeof errors]} 
+              <Field
+                label={t('fields.length')}
+                suffix="m"
+                error={errors[`filament-${filament.id}-lengthMeters` as keyof typeof errors]}
                 tip={t('tooltips.filamentLength')}
               >
                 <input
@@ -180,10 +142,10 @@ export function FilamentCard({
                   onChange={(e) => onUpdate(filament.id, { lengthMeters: parseInput(e.target.value) })}
                 />
               </Field>
-              <Field 
-                label={t('fields.diameter')} 
-                suffix={t('units.millimeters')} 
-                error={errors[`filament-${filament.id}-diameter` as keyof typeof errors]} 
+              <Field
+                label={t('fields.diameter')}
+                suffix={t('units.millimeters')}
+                error={errors[`filament-${filament.id}-diameter` as keyof typeof errors]}
                 tip={t('tooltips.filamentDiameter')}
               >
                 <input
@@ -201,11 +163,11 @@ export function FilamentCard({
 
         {filamentPricingMode === "length" && (
           <Row>
-            <Field 
-              label={t('fields.density')} 
-              suffix="g/cm³" 
-              hint={t('hints.densityHint')} 
-              error={errors[`filament-${filament.id}-density` as keyof typeof errors]} 
+            <Field
+              label={t('fields.density')}
+              suffix="g/cm³"
+              hint={t('hints.densityHint')}
+              error={errors[`filament-${filament.id}-density` as keyof typeof errors]}
               tip={t('tooltips.densityConversion')}
             >
               <input

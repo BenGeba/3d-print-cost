@@ -31,23 +31,11 @@
     "maintenance": "Maintenance",
     "laborRate": "Labor rate",
     "laborTime": "Labor time",
-    "preparationTime": "Preparation time",
-    "preparationRate": "Preparation rate",
     "shippingCost": "Shipping cost",
     "packagingCost": "Packaging cost",
     "vatTax": "VAT / Tax",
     "margin": "Margin",
-    "targetProfit": "Target profit amount",
-    "postProcessingTime": "Post-processing time",
-    "postProcessingRate": "Post-processing rate",
-    "profileName": "Profile Name",
-    "materialType": "Material Type",
-    "brand": "Brand",
-    "color": "Color",
-    "totalSpoolWeight": "Total Spool Weight (g)",
-    "emptySpoolWeight": "Empty Spool Weight (g)",
-    "filamentWeight": "Filament Weight (g)",
-    "url": "URL"
+    "targetProfit": "Target profit amount"
   },
   "units": {
     "percent": "%",
@@ -67,16 +55,14 @@
   },
   "tooltips": {
     "failureRate": "Share of failed prints over time (0–100%)",
-    "averagePower": "Mean wattage during steady-state printing (measure with smart plug)",
+    "averagePower": "Mean wattage during printing (measure with smart plug)",
     "printTime": "Total nozzle-on time; minutes normalize to 0–59",
     "energyPrice": "Your electricity unit price",
     "printerPrice": "Purchase price used for straight-line depreciation",
     "lifetime": "Expected productive hours until replacement",
     "maintenance": "Consumables & wear per printing hour",
-    "laborRate": "Your hourly rate for handling & post",
-    "laborTime": "Hands-on time (setup, cleanup)",
-    "preparationTime": "Time for pre-processing tasks",
-    "preparationRate": "Hourly rate for pre-processing tasks",
+    "laborRate": "Your hourly rate for manual work",
+    "laborTime": "Manual work time (preparation, post-processing, etc.)",
     "shippingCost": "Fixed shipping cost per order",
     "packagingCost": "Fixed packaging cost per order",
     "vatTax": "VAT percentage applied to net total",
@@ -86,13 +72,11 @@
     "materialPrice": "Material price per kilogram",
     "usedAmount": "Use slicer estimate or measured weight",
     "filamentLength": "From slicer or spool meter counter",
-    "filamentDensity": "Material density for weight calculations",
     "filamentDiameter": "Typical: 1.75 mm or 2.85 mm",
-    "densityHint": "PLA≈1.24, PETG≈1.27, ABS≈1.04, TPU≈1.21",
     "densityConversion": "Material density for length→grams conversion",
     "supportWaste": "Extra material for supports, brim, purge, etc.",
-    "postProcessingTime": "Time for sanding, painting, etc.",
-    "postProcessingRate": "Hourly rate for sanding, painting, etc."
+    "materialAdjustsNote": "Changing material adjusts average power based on official data when available or by a material multiplier.",
+    "energyPresetNote": "Preset values are typical PLA @ ~60°C bed; actual usage varies with temps, enclosure, room conditions."
   },
   "toggles": {
     "byGrams": "By grams",
@@ -105,14 +89,12 @@
     "maintenance": "Maintenance",
     "depreciation": "Depreciation",
     "labor": "Labor",
-    "preparation": "Preparation",
     "shipping": "Shipping",
     "packaging": "Packaging",
     "netTotal": "Net total",
     "vat": "VAT",
     "subtotal": "Subtotal",
     "total": "Total",
-    "postProcessing": "Post-processing",
     "marginWithPercent": "Margin ({{percent}}%)",
     "vatWithPercent": "VAT ({{percent}}%)"
   },
@@ -127,24 +109,12 @@
     "back": "Back",
     "retry": "Retry Install",
     "install": "Install App",
+    "cancel": "Cancel",
     "presets": "Presets",
-    "newProfile": "New Profile",
-    "createProfile": "Create Profile",
-    "updateProfile": "Update Profile",
-    "load": "Load",
-    "edit": "Edit",
-    "delete": "Delete",
-    "cancel": "Cancel"
+    "saveProject": "Save project"
   },
   "placeholders": {
-    "filamentName": "Filament name",
-    "notes": "Optional notes...",
-    "brandExample": "e.g. SUNLU, Bambu Lab, Polyterra",
-    "colorExample": "e.g. Red, Black, Transparent",
-    "totalWeight": "Spool + Filament",
-    "emptyWeight": "Empty spool only",
-    "autoCalculated": "Calculated automatically",
-    "urlExample": "Link to shop or product page"
+    "filamentName": "Filament name"
   },
   "messages": {
     "calculationLoaded": "Calculation loaded successfully",
@@ -168,15 +138,39 @@
     "undo": "Undo",
     "dark": "Dark",
     "light": "Light",
-    "profileLoaded": "Profile loaded successfully"
-  },
-  "chart": {
-    "mode": "{{mode}} mode"
+    "projectSaved": "Project saved",
+    "projectLoaded": "Project loaded"
   },
   "business": {
     "coreCosting": "Core Costing",
-    "laborProcessing": "Labor Costs",
+    "labor": "Labor",
     "additionalCosts": "Additional Costs"
+  },
+  "notes": {
+    "averagePower": "Average power: measure with a smart plug for best accuracy.",
+    "failureRate": "Failure rate applies as an amortized multiplier over material cost.",
+    "depreciation": "Depreciation uses straight-line: printer price / lifetime hours.",
+    "lengthConversion": "For length-based filament, density & diameter convert to grams.",
+    "decimalSeparator": "Both dot (.) and comma (,) work as decimal separators."
+  },
+  "quickTips": {
+    "title": "Quick tips",
+    "slicerEstimates": "Use slicer estimates for grams and hours, then refine with actuals.",
+    "failedPrints": "Track failed prints to tune your failure rate.",
+    "prices": "Keep prices per material brand; spool prices vary a lot.",
+    "overhead": "Consider separate business overhead (rent, insurance) if applicable."
+  },
+  "nav": {
+    "calculator": "Calculator",
+    "history": "History"
+  },
+  "history": {
+    "title": "Project History",
+    "empty": "No projects saved yet.",
+    "load": "Load",
+    "delete": "Delete",
+    "savedOn": "Saved on",
+    "saveTitle": "Save project"
   },
   "pwa": {
     "updateAvailable": "Update available",
@@ -211,49 +205,5 @@
       "dataProcessing": "Your input data is stored only locally on your device and is not transmitted to external servers, unless you use the sharing function.",
       "openSource": "This app is open source software available on GitHub under the MIT license."
     }
-  },
-  "navigation": {
-    "calculator": "Calculator",
-    "profiles": "Material Profiles"
-  },
-  "pages": {
-    "profiles": {
-      "title": "Material Profiles",
-      "description": "Manage your filament material profiles for quick access to pricing and specifications.",
-      "tips": {
-        "title": "Profile Management Tips",
-        "accurate": "Keep your profiles accurate by weighing empty spools and noting exact purchase prices.",
-        "brands": "Create separate profiles for different brands as prices and densities can vary significantly.",
-        "colors": "Some colors (like metallic or transparent) may have different densities than standard colors.",
-        "updates": "Update profiles when prices change to maintain accurate cost calculations.",
-        "urls": "Include purchase URLs to quickly reorder materials when running low."
-      }
-    }
-  },
-  "profiles": {
-    "title": "Material Profile",
-    "savedProfiles": "Saved Profiles",
-    "noProfiles": "No profiles created yet"
-  },
-  "stats": {
-    "totalProfiles": "Total Profiles",
-    "materialTypes": "Material Types", 
-    "brands": "Brands"
-  },
-  "materials": {
-    "other": "Other"
-  },
-  "common": {
-    "optional": "Optional"
-  },
-  "info": {
-    "costPerGram": "Cost per gram"
-  },
-  "aria": {
-    "cancelForm": "Cancel form",
-    "createNewProfile": "Create new profile",
-    "loadProfile": "Load profile",
-    "editProfile": "Edit profile",
-    "deleteProfile": "Delete profile"
   }
 }
