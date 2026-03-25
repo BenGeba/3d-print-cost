@@ -52,7 +52,7 @@ export function Header({
                     {/* Brand/Logo - responsive text size */}
                     <Link to="/" className="btn btn-ghost text-lg sm:text-xl truncate">
                         <span className="hidden sm:inline">{t('app.title')}</span>
-                        <span className="sm:hidden">3D Print Calc</span>
+                        <span className="sm:hidden">MakerCalc</span>
                     </Link>
                     <nav className="hidden md:flex items-center gap-1 ml-2">
                         <NavLink

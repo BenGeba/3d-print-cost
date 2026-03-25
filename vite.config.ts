@@ -53,9 +53,9 @@ export default defineConfig(({ mode }) => {
         },
         manifest: {
           id: `${base}?source=pwa`,
-          name: '3D Print Cost',
-          short_name: '3D Cost',
-          description: '3D Print Cost Calculator',
+          name: 'MakerCalc',
+          short_name: 'MakerCalc',
+          description: 'Cost calculator for 3D printing and laser engraving',
           start_url: base,
           scope: base,
           display: 'standalone',

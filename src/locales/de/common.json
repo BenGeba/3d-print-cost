@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "3D-Druck Kostenrechner",
+    "title": "MakerCalc",
     "subtitle": "Planen Sie zuverlässige Kosten für Ihre FDM-Drucke. Speichern Sie Voreinstellungen, wechseln Sie zwischen Modi und erhalten Sie eine transparente Aufschlüsselung.",
     "modes": {
       "hobby": "Hobby",

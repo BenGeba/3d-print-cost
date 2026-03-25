@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "3D Print Cost Calculator",
+    "title": "MakerCalc",
     "subtitle": "Plan reliable costs for your FDM prints. Save presets, switch modes, and get a transparent breakdown.",
     "modes": {
       "hobby": "Hobby",
